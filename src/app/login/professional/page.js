@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { signUpUser } from "@/actions/AuthAction";
+import { signInHelper, signUpConsumer, signUpUser } from "@/actions/AuthAction";
 import {
   Card,
   CardContent,
@@ -21,26 +21,39 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Link from "next/link";
 
 const formSchema = z.object({
-  role: z.enum(["user", "professional"], { message: "Please select a role." }),
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().trim().min(6, { message: "Password must be at least 6 characters long" }),
 });
 
 export default function SignUpForm() {
-  const [selectedRole, setSelectedRole] = useState("professional");
   const router = useRouter();
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      role: "professional",
+      email: "",
+      password: "",
     },
   });
 
   async function onSubmit(values) {
-    const pushUrl = "/login/"+values.role
-    router.push(pushUrl);
+    console.log("Submitting:", values);
+    const result = await signInHelper(values);
+    if (result.success) {
+      router.push("/jobs");
+    } else {
+      console.log("Signup failed:", result.message);
+    }
   }
 
   return (
@@ -52,33 +65,42 @@ export default function SignUpForm() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
+              {/* Email */}
               <FormField
                 control={form.control}
-                name="role"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex gap-2 items-center w-full">
-                      {["user", "professional"].map((role) => (
-                        <button
-                          key={role}
-                          type="button"
-                          onClick={() => {
-                            setSelectedRole(role);
-                            field.onChange(role);
-                          }}
-                          className={`px-4 py-2 border w-1/2 rounded-md transition-all ${selectedRole === role ? "bg-black text-white" : "bg-white text-black border-gray-300"}`}
-                        >
-                          {role.charAt(0).toUpperCase() + role.slice(1)}
-                        </button>
-                      ))}
-                    </div>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter email" type="email" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
-              /> 
+              />
 
-            <Button type="submit" className="w-full">Submit</Button> 
+              {/* Password */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter password" type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
+
+
+
+              {/* Submit Button */}
+              <Button type="submit" className="w-full">Login</Button>
             </form>
           </Form>
           <div className="flex justify-center mt-4">
@@ -89,10 +111,6 @@ export default function SignUpForm() {
           </div>
         </CardContent>
       </Card>
-    </div>  
+    </div>
   );
 }
-
-
-
-         

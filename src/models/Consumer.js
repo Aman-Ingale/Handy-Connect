@@ -1,14 +1,10 @@
 import mongoose from "mongoose";
-
-const ConsumerSchema = mongoose.Schema({
-    firstname: String,
-    lastname: String,
-    location: String,
-    profession: String,
-    pricing: String,
-    pricingPer: String,
-    email: String,
-    password: String,
-})
-
-export default ConsumerModel = mongoose.models.consumer || mongoose.model("consumer",ConsumerSchema)
+const ConsumerSchema = new mongoose.Schema({
+  firstname: String,
+  lastname: String,
+  email: { type: String, unique: true },
+  password:{ type: String, unique: true }
+});
+const ConsumerModel = mongoose.models?.Consumer || mongoose.model("Consumer", ConsumerSchema);
+// const ConsumerModel = mongoose.model("Consumer", ConsumerSchema);
+export default ConsumerModel
