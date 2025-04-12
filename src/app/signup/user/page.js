@@ -1,7 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { signUpConsumer, signUpUser } from "@/actions/AuthAction";
+import { signUpConsumer } from "@/actions/AuthAction";
 import {
   Card,
   CardContent,
@@ -21,13 +20,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Link from "next/link";
 
 const formSchema = z.object({
@@ -35,6 +29,10 @@ const formSchema = z.object({
   lastname: z.string().trim().min(2, { message: "Last name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().trim().min(6, { message: "Password must be at least 6 characters long" }),
+  gender: z.enum(["male", "female"], { required_error: "Please select gender" }),
+  address: z.string().trim().min(10, { message: "Address must be at least 10 characters." }),
+  location: z.string().trim().min(2, { message: "Location is required" }),
+  phone: z.string().regex(/^[0-9]{10}$/, { message: "Invalid phone number" }),
 });
 
 export default function SignUpForm() {
@@ -47,6 +45,10 @@ export default function SignUpForm() {
       lastname: "",
       email: "",
       password: "",
+      gender: undefined,
+      address: "",
+      location: "",
+      phone: "",
     },
   });
 
@@ -61,10 +63,10 @@ export default function SignUpForm() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen px-4">
-      <Card className="w-full max-w-lg p-6 shadow-lg">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
+      <Card className="w-full max-w-2xl p-8 shadow-xl rounded-xl bg-white text-black">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Sign Up</CardTitle>
+          <CardTitle className="text-3xl font-bold text-center text-gray-900">Sign Up</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -76,9 +78,9 @@ export default function SignUpForm() {
                 name="firstname"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>First Name</FormLabel>
+                    <FormLabel className="text-gray-800">First Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter first name" {...field} />
+                      <Input placeholder="John" className="bg-gray-50 border border-gray-300" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -91,9 +93,9 @@ export default function SignUpForm() {
                 name="lastname"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Last Name</FormLabel>
+                    <FormLabel className="text-gray-800">Last Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter last name" {...field} />
+                      <Input placeholder="Doe" className="bg-gray-50 border border-gray-300" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -106,9 +108,9 @@ export default function SignUpForm() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-gray-800">Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter email" type="email" {...field} />
+                      <Input type="email" placeholder="johndoe@example.com" className="bg-gray-50 border border-gray-300" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -121,28 +123,98 @@ export default function SignUpForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-gray-800">Password</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter password" type="password" {...field} />
+                      <Input type="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* Gender */}
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">Gender</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex space-x-6"
+                      >
+                        <FormItem className="flex items-center space-x-2">
+                          <RadioGroupItem value="male" id="r1" />
+                          <FormLabel htmlFor="r1" className="text-gray-700">Male</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2">
+                          <RadioGroupItem value="female" id="r2" />
+                          <FormLabel htmlFor="r2" className="text-gray-700">Female</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
+              {/* Phone Number */}
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">Phone Number</FormLabel>
+                    <FormControl>
+                      <Input type="tel" placeholder="1234567890" maxLength={10} className="bg-gray-50 border border-gray-300" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
+              {/* Location */}
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="City or Area" className="bg-gray-50 border border-gray-300" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Address */}
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-800">Address</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Enter full address" rows={3} className="bg-gray-50 border border-gray-300" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               {/* Submit Button */}
-              <Button type="submit" className="w-full">Sign Up</Button>
+              <Button type="submit" className="w-full bg-gray-900 hover:bg-gray-800 text-white text-lg transition-colors">
+                Sign Up
+              </Button>
             </form>
           </Form>
-          <div className="flex justify-center mt-4">
-            <span className="text-gray-500">Already have an account?&nbsp;</span>
-            <Link href="/login" className="text-blue-500 ">
-              Login
-            </Link>
-          </div>
+          <div className="text-center mt-4">
+                            <span className="text-sm text-muted-foreground">Already have an account?</span>
+                            <Link href="/login" className="ml-1 text-sm text-blue-500 hover:underline">Login</Link>
+                          </div>
         </CardContent>
       </Card>
     </div>

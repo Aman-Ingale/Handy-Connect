@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import HelperModel from "@/models/Helper";
 import ConsumerModel from "@/models/Consumer";
+import { Phone } from "lucide-react";
 // import { createSession } from "@/lib/session";
 
 export async function signUpConsumer(formData) {
@@ -53,6 +54,12 @@ export async function signUpHelper(formData) {
       pricingPer: data.pricingPer,
       email: data.email,
       password: hashedPassword,
+      description : data.description,
+      phone_number : data.phone,
+      experience : data.experience,
+      address : data.address,
+      gender : data.gender,
+      
     });
     await newUser.save();
     return { success: true, message: "USER REGISTERED SUCCESSFULLY" };

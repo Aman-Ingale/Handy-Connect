@@ -164,12 +164,12 @@ export default function JobsPage() {
                     <span className="text-sm">{pro.total_stars}</span>
                   </div>
                   <div className="text-sm text-muted-foreground">Experience: {pro.experience} yrs</div>
-                  <span className="text-lg font-bold text-green-600 flex items-center justify-center">
+                  {/* <span className="text-lg font-bold text-green-600 flex items-center justify-center">
                     <DollarSign className="inline-block h-5 w-5 mr-1" />
                     {pro.pricing}/hr
-                  </span>
+                  </span> */}
                   <Link key={pro._id} href={`/professionalProfile/${pro._id}`} >
-                  <Button  className="w-full mt-2">Connect</Button>
+                  <Button  className="w-full mt-2">View Details</Button>
                   </Link>
 
                 </CardContent>

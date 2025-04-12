@@ -4,8 +4,6 @@ const HelperSchema = new mongoose.Schema({
   lastname: String,
   location: String,
   profession: String,
-  pricing: String,
-  pricingPer: String,
   email: { type: String, unique: true },
   password:{ type: String, unique: true },
   completed_jobs:{type:Number, default:0},

@@ -1,4 +1,5 @@
 "use client"
+import { use } from 'react';
 
 import { useEffect, useState } from "react"
 import { Award, Calendar, Check, MapPin, Phone, Shield, Star } from "lucide-react"
@@ -65,7 +66,7 @@ const certifications = [
 export default function HelperProfile({ params }) {
   const [activeTab, setActiveTab] = useState("overview")
   const [professional, setProfessional] = useState({})
-  const {id} = params
+  const {id} = use(params)
     useEffect(() => {
       async function getData() {
         const professional = await getProfessionalData(id);

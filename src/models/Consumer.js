@@ -13,7 +13,9 @@ const ConsumerSchema = new mongoose.Schema({
     //required : true
   },
   service_booked : {type : Number, default :0},
-  service_completed : {type : Number, default :0}
+  service_completed : {type : Number, default :0},
+  address : String,
+  location : String,
 });
 const ConsumerModel = mongoose.models?.Consumer || mongoose.model("Consumer", ConsumerSchema);
 // const ConsumerModel = mongoose.model("Consumer", ConsumerSchema);
