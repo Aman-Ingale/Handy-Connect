@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/ui/footer";
 import Header from "@/components/ui/header";
@@ -22,7 +22,7 @@ export default function HomePage() {
       <main className="flex-1">
         {/* About Section */}
         <section ref={aboutRef} className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-muted">
-          <div className="container px-4 md:px-6 text-center">
+          <div className="container px-4 md:px-6 text-center mx-auto">
             <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl">Find Local Professionals for Any Job</h1>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
               Connect with skilled local freelancers for your home, office, or personal projects.
@@ -39,7 +39,7 @@ export default function HomePage() {
 
         {/* Popular Categories Section */}
         <section ref={categoriesRef} className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-          <div className="container px-4 md:px-6 text-center">
+          <div className="container px-4 md:px-6 text-center mx-auto">
             <h2 className="text-3xl font-bold sm:text-5xl">Popular Categories</h2>
             <p className="max-w-[900px] mx-auto text-muted-foreground md:text-xl">
               Discover a wide range of services offered by local professionals.
@@ -57,7 +57,7 @@ export default function HomePage() {
 
         {/* How It Works Section */}
         <section ref={howItWorksRef} className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6 text-center">
+          <div className="container px-4 md:px-6 text-center mx-auto">
             <h2 className="text-3xl font-bold sm:text-5xl">How It Works</h2>
             <p className="max-w-[900px] mx-auto text-muted-foreground md:text-xl">
               Getting your project done is easy with LocalPro. Here's how:
@@ -80,12 +80,12 @@ export default function HomePage() {
 
         {/* Get Started Section */}
         <section ref={getStartedRef} className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-          <div className="container px-4 md:px-6 text-center">
+          <div className="container px-4 md:px-6 text-center mx-auto">
             <h2 className="text-3xl font-bold sm:text-5xl">Ready to Get Started?</h2>
             <p className="max-w-[900px] mx-auto text-muted-foreground md:text-xl">
               Join LocalPro today and connect with skilled professionals in your area.
             </p>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row">
+            <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center py-4">
               <Button size="lg">Find a Professional</Button>
               <Button size="lg" variant="outline">Become a Pro</Button>
             </div>

@@ -50,7 +50,9 @@ export default function SignUpForm() {
     console.log("Submitting:", values);
     const result = await signInHelper(values);
     if (result.success) {
-      router.push("/jobs");
+      localStorage.setItem("id",result.data._id.toString());
+      router.push("/dashboard");
+
     } else {
       console.log("Signup failed:", result.message);
     }

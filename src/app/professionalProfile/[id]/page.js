@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Award, Calendar, Check, MapPin, Phone, Shield, Star } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -10,33 +10,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { getProfessionalData } from "@/actions/fetchActions"
 
-const reviews = [
-  {
-    id: 1,
-    customer: "Priya Sharma",
-    rating: 5,
-    date: "15 Apr 2023",
-    comment: "Ramesh was very professional and fixed our electrical issues quickly. Highly recommended!",
-    service: "Electrical Repair",
-  },
-  {
-    id: 2,
-    customer: "Amit Patel",
-    rating: 4,
-    date: "8 Apr 2023",
-    comment: "Good service, installed the fan properly. Was a bit late but called to inform.",
-    service: "Fan Installation",
-  },
-  {
-    id: 3,
-    customer: "Neha Gupta",
-    rating: 5,
-    date: "5 Apr 2023",
-    comment: "Excellent work! Very neat and clean installation of switches.",
-    service: "Switch Replacement",
-  },
-]
+const reviews = []
 
 const workHistory = [
   {
@@ -86,9 +62,18 @@ const certifications = [
   },
 ]
 
-export default function HelperProfile() {
+export default function HelperProfile({ params }) {
   const [activeTab, setActiveTab] = useState("overview")
-
+  const [professional, setProfessional] = useState({})
+  const {id} = params
+    useEffect(() => {
+      async function getData() {
+        const professional = await getProfessionalData(id);
+        setProfessional(professional)
+        console.log(professional)
+      }
+      getData();
+    }, [])
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-5xl mx-auto">
@@ -99,12 +84,12 @@ export default function HelperProfile() {
               <CardContent className="pt-6 flex flex-col items-center">
                 <Avatar className="h-32 w-32 mb-4">
                   <AvatarImage src="/placeholder.svg?height=128&width=128" alt="Ramesh Kumar" />
-                  <AvatarFallback className="text-3xl">RK</AvatarFallback>
+                  <AvatarFallback className="text-3xl"></AvatarFallback>
                 </Avatar>
 
                 <div className="text-center">
-                  <h1 className="text-2xl font-bold">Ramesh Kumar</h1>
-                  <p className="text-slate-500">Electrician</p>
+                  <h1 className="text-2xl font-bold">{professional.firstname} {professional.lastname}</h1>
+                  <p className="text-slate-500">{professional.profession}</p>
 
                   <div className="flex items-center justify-center mt-2">
                     <div className="flex">
@@ -116,12 +101,12 @@ export default function HelperProfile() {
                         />
                       ))}
                     </div>
-                    <span className="ml-2 font-medium">4.6</span>
+                    <span className="ml-2 font-medium">{professional.total_stars}</span>
                     <span className="text-slate-500 ml-1">(42)</span>
                   </div>
 
                   <div className="flex justify-center gap-2 mt-4">
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Available</Badge>
+                    {/* <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Available</Badge> */}
                     <Badge variant="outline" className="border-blue-200 text-blue-800">
                       <Shield className="h-3 w-3 mr-1" /> Verified
                     </Badge>
@@ -133,15 +118,15 @@ export default function HelperProfile() {
                 <div className="w-full space-y-4">
                   <div className="flex items-center">
                     <MapPin className="h-5 w-5 text-slate-400 mr-3" />
-                    <span>Pune, Maharashtra</span>
+                    <span>{professional.location}</span>
                   </div>
                   <div className="flex items-center">
                     <Phone className="h-5 w-5 text-slate-400 mr-3" />
-                    <span>+91 98765 43210</span>
+                    <span>{professional.phone_number}</span>
                   </div>
                   <div className="flex items-center">
                     <Calendar className="h-5 w-5 text-slate-400 mr-3" />
-                    <span>Member since Jan 2020</span>
+                    <span>Member since {new Date(professional.registration_on).getFullYear()}</span>
                   </div>
                 </div>
 
@@ -157,7 +142,7 @@ export default function HelperProfile() {
               <TabsList className="grid grid-cols-3 mb-6">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
-                <TabsTrigger value="experience">Experience</TabsTrigger>
+                {/* <TabsTrigger value="experience">Experience</TabsTrigger> */}
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
@@ -166,15 +151,11 @@ export default function HelperProfile() {
                     <CardTitle>About Me</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-600">
-                      I am a certified electrician with over 8 years of experience in residential and commercial
-                      electrical services. I specialize in electrical installations, repairs, and maintenance. My goal
-                      is to provide safe, reliable, and efficient electrical solutions to all my clients.
-                    </p>
+                    {professional.description}
                   </CardContent>
                 </Card>
 
-                <Card>
+                {/* <Card>
                   <CardHeader>
                     <CardTitle>Skills & Expertise</CardTitle>
                   </CardHeader>
@@ -229,9 +210,9 @@ export default function HelperProfile() {
                       </div>
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
 
-                <Card>
+                {/* <Card>
                   <CardHeader>
                     <CardTitle>Service Areas</CardTitle>
                   </CardHeader>
@@ -246,9 +227,9 @@ export default function HelperProfile() {
                       <Badge variant="secondary">Kharadi</Badge>
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
 
-                <Card>
+                {/* <Card>
                   <CardHeader>
                     <CardTitle>Verification Status</CardTitle>
                   </CardHeader>
@@ -285,24 +266,24 @@ export default function HelperProfile() {
                       </div>
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
               </TabsContent>
 
               <TabsContent value="reviews" className="space-y-6">
                 <Card>
                   <CardHeader>
                     <CardTitle>Customer Reviews</CardTitle>
-                    <CardDescription>Based on 42 reviews</CardDescription>
+                    <CardDescription>Based on {professional.total_ratings} reviews</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center mb-6">
-                      <div className="text-5xl font-bold mr-6">4.6</div>
+                      <div className="text-5xl font-bold mr-6">{professional.total_stars}</div>
                       <div className="flex-1">
                         <div className="flex items-center mb-1">
-                          <div className="w-full bg-slate-200 rounded-full h-2 mr-2">
+                          {/* <div className="w-full bg-slate-200 rounded-full h-2 mr-2">
                             <div className="bg-amber-500 h-2 rounded-full" style={{ width: "75%" }}></div>
-                          </div>
-                          <div className="flex items-center min-w-[60px]">
+                          </div> */}
+                          {/* <div className="flex items-center min-w-[60px]">
                             <Star className="h-4 w-4 text-amber-500 fill-amber-500 mr-1" />
                             <span>5</span>
                             <span className="text-slate-500 ml-1">(32)</span>
@@ -340,9 +321,9 @@ export default function HelperProfile() {
                             <span>2</span>
                             <span className="text-slate-500 ml-1">(0)</span>
                           </div>
-                        </div>
-
-                        <div className="flex items-center">
+                        </div> */}
+                      </div>
+                        {/* <div className="flex items-center">
                           <div className="w-full bg-slate-200 rounded-full h-2 mr-2">
                             <div className="bg-amber-500 h-2 rounded-full" style={{ width: "0%" }}></div>
                           </div>
@@ -351,7 +332,7 @@ export default function HelperProfile() {
                             <span>1</span>
                             <span className="text-slate-500 ml-1">(0)</span>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
 

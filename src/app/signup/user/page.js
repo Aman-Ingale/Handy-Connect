@@ -54,7 +54,7 @@ export default function SignUpForm() {
     console.log("Submitting:", values);
     const result = await signUpConsumer(values);
     if (result.success) {
-      router.push("/login");
+      router.push("/login/user");
     } else {
       console.error("Signup failed:", result.message);
     }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Bell,
   Calendar,
@@ -23,116 +23,34 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
+import { getUserData } from "@/actions/fetchActions"
+import { useRouter } from "next/navigation"
+// const serviceHistory = []
 
-const serviceHistory = [
-  {
-    id: 1,
-    service: "Electrical Repair",
-    helper: "Ramesh Kumar",
-    date: "15 Apr 2023",
-    amount: 1200,
-    status: "Completed",
-    rating: 5,
-  },
-  {
-    id: 2,
-    service: "Plumbing Work",
-    helper: "Suresh Patel",
-    date: "10 Apr 2023",
-    amount: 800,
-    status: "Completed",
-    rating: 4,
-  },
-  {
-    id: 3,
-    service: "AC Servicing",
-    helper: "Mahesh Sharma",
-    date: "2 Apr 2023",
-    amount: 1500,
-    status: "Completed",
-    rating: 5,
-  },
-]
+// const upcomingServices = []
 
-const upcomingServices = [
-  {
-    id: 1,
-    service: "Furniture Assembly",
-    helper: "Dinesh Yadav",
-    date: "25 Apr 2023",
-    time: "10:00 AM",
-    amount: 1800,
-    status: "Scheduled",
-  },
-]
+// const savedAddresses = []
 
-const savedAddresses = [
-  {
-    id: 1,
-    name: "Home",
-    address: "123, Green Valley Apartments, Aundh, Pune - 411007",
-    default: true,
-  },
-  {
-    id: 2,
-    name: "Office",
-    address: "456, Tech Park, Hinjewadi Phase 1, Pune - 411057",
-    default: false,
-  },
-  {
-    id: 3,
-    name: "Parents' Home",
-    address: "789, Sunshine Colony, Kothrud, Pune - 411038",
-    default: false,
-  },
-]
-
-const paymentMethods = [
-  {
-    id: 1,
-    type: "Credit Card",
-    name: "HDFC Bank",
-    number: "****  ****  ****  4567",
-    expiry: "05/25",
-    default: true,
-  },
-  {
-    id: 2,
-    type: "UPI",
-    name: "Google Pay",
-    number: "ananya@upi",
-    expiry: null,
-    default: false,
-  },
-]
-
-const favoriteHelpers = [
-  {
-    id: 1,
-    name: "Ramesh Kumar",
-    profession: "Electrician",
-    rating: 4.6,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 2,
-    name: "Suresh Patel",
-    profession: "Plumber",
-    rating: 4.4,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-  {
-    id: 3,
-    name: "Mahesh Sharma",
-    profession: "AC Technician",
-    rating: 4.8,
-    image: "/placeholder.svg?height=64&width=64",
-  },
-]
+// const paymentMethods = []
+// const favoriteHelpers = []
 
 export default function CustomerProfile() {
   const [activeTab, setActiveTab] = useState("profile")
-
+  const [User, setUser] = useState({})
+    const router = useRouter();
+  
+  function handleLogOut() {
+    localStorage.removeItem("id")
+    router.push("/")
+  }
+    useEffect(() => {
+      async function getData() {
+        const x = await getUserData(localStorage.getItem("id"));
+        setUser(x)
+        console.log(x)
+      }
+      getData();
+    }, [])
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-5xl mx-auto">
@@ -143,29 +61,30 @@ export default function CustomerProfile() {
               <CardContent className="pt-6 flex flex-col items-center">
                 <Avatar className="h-32 w-32 mb-4">
                   <AvatarImage src="/placeholder.svg?height=128&width=128" alt="Ananya Desai" />
-                  <AvatarFallback className="text-3xl">AD</AvatarFallback>
+                  <AvatarFallback className="text-3xl"></AvatarFallback>
                 </Avatar>
 
                 <div className="text-center">
-                  <h1 className="text-2xl font-bold">Ananya Desai</h1>
+                  <h1 className="text-2xl font-bold">{User.firstname} {User.lastname}</h1>
                   <p className="text-slate-500">Customer</p>
 
-                  <div className="flex justify-center gap-2 mt-4">
+                  <div className="flex justify-center gap-2 mt-4 mb-4">
                     <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Premium Member</Badge>
                   </div>
                 </div>
+                <Button onClick={handleLogOut}>Log Out</Button>
 
                 <Separator className="my-6" />
 
                 <div className="w-full">
                   <nav className="space-y-1">
-                    <NavItem
+                    {/* <NavItem
                       icon={User}
                       label="Profile"
                       active={activeTab === "profile"}
                       onClick={() => setActiveTab("profile")}
-                    />
-                    <NavItem
+                    /> */}
+                    {/* <NavItem
                       icon={ShoppingBag}
                       label="Service History"
                       active={activeTab === "services"}
@@ -201,7 +120,7 @@ export default function CustomerProfile() {
                       active={activeTab === "settings"}
                       onClick={() => setActiveTab("settings")}
                     />
-                    <NavItem icon={LogOut} label="Logout" />
+                    <NavItem icon={LogOut} label="Logout" /> */}
                   </nav>
                 </div>
               </CardContent>
@@ -225,32 +144,32 @@ export default function CustomerProfile() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-1">
                         <div className="text-sm text-slate-500">Full Name</div>
-                        <div className="font-medium">Ananya Desai</div>
+                        <div className="font-medium">{User.firstname} {User.lastname}</div>
                       </div>
 
                       <div className="space-y-1">
                         <div className="text-sm text-slate-500">Email</div>
-                        <div className="font-medium">ananya.desai@example.com</div>
+                        <div className="font-medium">{User.email}</div>
                       </div>
 
                       <div className="space-y-1">
                         <div className="text-sm text-slate-500">Phone Number</div>
-                        <div className="font-medium">+91 98765 12345</div>
+                        <div className="font-medium">{User.phone_number}</div>
                       </div>
 
-                      <div className="space-y-1">
+                      {/* <div className="space-y-1">
                         <div className="text-sm text-slate-500">Date of Birth</div>
                         <div className="font-medium">15 June 1990</div>
-                      </div>
+                      </div> */}
 
                       <div className="space-y-1">
                         <div className="text-sm text-slate-500">Gender</div>
-                        <div className="font-medium">Female</div>
+                        <div className="font-medium">{User.gender}</div>
                       </div>
 
                       <div className="space-y-1">
-                        <div className="text-sm text-slate-500">Member Since</div>
-                        <div className="font-medium">March 2022</div>
+                        <div className="text-sm text-slate-500">Member Since </div>
+                        <div className="font-medium">{new Date(User.registration_on).getFullYear()}</div>
                       </div>
                     </div>
                   </CardContent>
@@ -264,26 +183,26 @@ export default function CustomerProfile() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                       <div className="bg-blue-50 rounded-lg p-4 text-center">
-                        <div className="text-3xl font-bold text-blue-600">18</div>
+                        <div className="text-3xl font-bold text-blue-600">{JSON.stringify(User.service_booked)}</div>
                         <div className="text-sm text-slate-600 mt-1">Services Booked</div>
                       </div>
 
                       <div className="bg-green-50 rounded-lg p-4 text-center">
-                        <div className="text-3xl font-bold text-green-600">15</div>
+                        <div className="text-3xl font-bold text-green-600">{JSON.stringify(User.service_completed)}</div>
                         <div className="text-sm text-slate-600 mt-1">Completed</div>
                       </div>
 
-                      <div className="bg-amber-50 rounded-lg p-4 text-center">
+                      {/* <div className="bg-amber-50 rounded-lg p-4 text-center">
                         <div className="text-3xl font-bold text-amber-600">4.7</div>
                         <div className="text-sm text-slate-600 mt-1">Avg. Rating Given</div>
-                      </div>
+                      </div> */}
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="mt-6">
+                {/* <Card className="mt-6">
                   <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                       <CardTitle>Notification Preferences</CardTitle>
@@ -329,7 +248,7 @@ export default function CustomerProfile() {
                       </div>
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
               </TabsContent>
 
               <TabsContent value="services" className="mt-0" hidden={activeTab !== "services"}>
@@ -339,7 +258,7 @@ export default function CustomerProfile() {
                     <CardDescription>Your past service bookings</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-6">
+                    {/* <div className="space-y-6">
                       {serviceHistory.map((service) => (
                         <div key={service.id} className="border rounded-lg p-4">
                           <div className="flex flex-col sm:flex-row justify-between mb-2">
@@ -371,7 +290,7 @@ export default function CustomerProfile() {
                           </div>
                         </div>
                       ))}
-                    </div>
+                    </div> */}
                   </CardContent>
                   <CardFooter>
                     <Button variant="outline" className="w-full">
@@ -391,7 +310,7 @@ export default function CustomerProfile() {
                     <Button>Add New Address</Button>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    {/* <div className="space-y-4">
                       {savedAddresses.map((address) => (
                         <div key={address.id} className="border rounded-lg p-4 relative">
                           <div className="flex justify-between mb-1">
@@ -408,7 +327,7 @@ export default function CustomerProfile() {
                           )}
                         </div>
                       ))}
-                    </div>
+                    </div> */}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -423,7 +342,7 @@ export default function CustomerProfile() {
                     <Button>Add Payment Method</Button>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    {/* <div className="space-y-4">
                       {paymentMethods.map((payment) => (
                         <div key={payment.id} className="border rounded-lg p-4 relative">
                           <div className="flex justify-between mb-1">
@@ -442,7 +361,7 @@ export default function CustomerProfile() {
                           )}
                         </div>
                       ))}
-                    </div>
+                    </div> */}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -454,7 +373,7 @@ export default function CustomerProfile() {
                     <CardDescription>Service providers you've saved</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {favoriteHelpers.map((helper) => (
                         <div key={helper.id} className="border rounded-lg p-4 flex items-center">
                           <Avatar className="h-12 w-12 mr-4">
@@ -474,7 +393,7 @@ export default function CustomerProfile() {
                           </Button>
                         </div>
                       ))}
-                    </div>
+                    </div> */}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -485,7 +404,7 @@ export default function CustomerProfile() {
                     <CardTitle>Upcoming Appointments</CardTitle>
                     <CardDescription>Your scheduled services</CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  {/* <CardContent>
                     {upcomingServices.length > 0 ? (
                       <div className="space-y-4">
                         {upcomingServices.map((service) => (
@@ -529,10 +448,10 @@ export default function CustomerProfile() {
                         <Button className="mt-4">Book a Service</Button>
                       </div>
                     )}
-                  </CardContent>
+                  </CardContent> */}
                 </Card>
 
-                <Card className="mt-6">
+                {/* <Card className="mt-6">
                   <CardHeader>
                     <CardTitle>Past Appointments</CardTitle>
                     <CardDescription>Your service history</CardDescription>
@@ -563,7 +482,7 @@ export default function CustomerProfile() {
                       View All Past Appointments
                     </Button>
                   </CardFooter>
-                </Card>
+                </Card> */}
               </TabsContent>
 
               <TabsContent value="settings" className="mt-0" hidden={activeTab !== "settings"}>
@@ -624,8 +543,8 @@ function NavItem({
       className={`w-full justify-start ${active ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"}`}
       onClick={onClick}
     >
-      <Icon className="h-5 w-5 mr-2" />
-      <span>{label}</span>
+      {/* <Icon className="h-5 w-5 mr-2" />
+      <span>abc</span> */}
     </Button>
   )
 }

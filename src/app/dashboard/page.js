@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CalendarIcon, Home, LineChartIcon, Menu, Star, User, Wallet } from "lucide-react"
 import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 
@@ -11,7 +11,9 @@ import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
+import { getProfessionalData } from "@/actions/fetchActions"
+import { ErrorBoundary } from "next/dist/client/components/error-boundary"
+import { useRouter } from "next/navigation"
 const earningsData = [
   { name: "Jan", earnings: 4000 },
   { name: "Feb", earnings: 3000 },
@@ -54,10 +56,29 @@ const recentJobs = [
     rating: 4,
   },
 ]
-
 export default function HelperDashboard() {
+  const [professional, setProfessional] = useState({});
+  const [professionalRating, setProfessionalRating] = useState(professional.total_ratings)
+  const [nameInitial, setNameInitial] = useState("")
+      const router = useRouter();
+  
+  function handleLogOut() {
+    localStorage.removeItem("id")
+    router.push("/")
+  }
+  try {
+    useEffect(() => {
+      async function getData() {
+        const professional = await getProfessionalData(localStorage.getItem("id"));
+        setProfessional(professional)
+        console.log(professional)
+      }
+      getData();
+    }, [])
+  } catch (error) {
+    console.log(error)
+  }
   const [date, setDate] = useState(new Date())
-
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Mobile Navigation */}
@@ -75,7 +96,7 @@ export default function HelperDashboard() {
       <div className="flex">
         {/* Desktop Sidebar */}
         <aside className="hidden md:block bg-slate-800 text-white h-screen sticky top-0 w-64">
-          <DesktopSidebar />
+          <DesktopSidebar professional={professional} />
         </aside>
 
         {/* Main Content */}
@@ -84,13 +105,13 @@ export default function HelperDashboard() {
             {/* Header */}
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-slate-900">Helper Dashboard</h1>
-                <p className="text-slate-500">Welcome back, Ramesh Kumar</p>
+                <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
+                <p className="text-slate-500">Welcome back, {professional.firstname} {professional.lastname}</p>
               </div>
 
               <Avatar>
                 <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Ramesh Kumar" />
-                <AvatarFallback>RK</AvatarFallback>
+                <AvatarFallback></AvatarFallback>
               </Avatar>
             </div>
 
@@ -105,7 +126,7 @@ export default function HelperDashboard() {
                   <CardDescription>This month</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">₹6,000</div>
+                  <div className="text-3xl font-bold">{professional.total_earnings}</div>
                 </CardContent>
               </Card>
 
@@ -118,7 +139,7 @@ export default function HelperDashboard() {
                   <CardDescription>Total transactions</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">18</div>
+                  <div className="text-3xl font-bold">{professional.completed_jobs}</div>
                 </CardContent>
               </Card>
 
@@ -131,7 +152,7 @@ export default function HelperDashboard() {
                   <CardDescription>Customer Feedback</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">4.6 ★</div>
+                  <div className="text-3xl font-bold">{professionalRating} ★</div>
                 </CardContent>
               </Card>
             </div>
@@ -140,7 +161,7 @@ export default function HelperDashboard() {
             <Tabs defaultValue="dashboard" className="w-full">
               <TabsList className="grid grid-cols-3 w-full max-w-md">
                 <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-                <TabsTrigger value="jobs">Jobs</TabsTrigger>
+                {/* <TabsTrigger value="jobs">Jobs</TabsTrigger> */}
                 <TabsTrigger value="profile">Profile</TabsTrigger>
               </TabsList>
 
@@ -275,22 +296,23 @@ export default function HelperDashboard() {
               <TabsContent value="profile" className="space-y-6 mt-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Helper Profile</CardTitle>
+                    <CardTitle>Profile</CardTitle>
                     <CardDescription>Personal information</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
                       <Avatar className="h-24 w-24">
                         <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Ramesh Kumar" />
-                        <AvatarFallback className="text-2xl">RK</AvatarFallback>
+                        <AvatarFallback className="text-2xl">{
+                          nameInitial}</AvatarFallback>
                       </Avatar>
 
                       <div className="space-y-2 text-center sm:text-left">
-                        <div className="text-xl font-bold">Ramesh Kumar</div>
-                        <div className="text-slate-500">Electrician</div>
+                        <div className="text-xl font-bold">{professional.firstname} {professional.lastname}</div>
+                        <div className="text-slate-500">{professional.profession}</div>
                         <div className="flex items-center justify-center sm:justify-start">
                           <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-                          <span className="ml-1">4.6 (42 reviews)</span>
+                          <span className="ml-1">{professionalRating} ({professional.total_ratings} reviews)</span>
                         </div>
                         <Badge variant="outline" className="mt-1">
                           Verified Professional
@@ -301,26 +323,26 @@ export default function HelperDashboard() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-1">
                         <div className="text-sm text-slate-500">Phone Number</div>
-                        <div className="font-medium">+91 98765 43210</div>
+                        <div className="font-medium">{professional.phone_number}</div>
                       </div>
 
                       <div className="space-y-1">
                         <div className="text-sm text-slate-500">Email</div>
-                        <div className="font-medium">ramesh.kumar@example.com</div>
+                        <div className="font-medium">{professional.email}</div>
                       </div>
 
                       <div className="space-y-1">
                         <div className="text-sm text-slate-500">Location</div>
-                        <div className="font-medium">Pune, Maharashtra</div>
+                        <div className="font-medium">{professional.location}</div>
                       </div>
 
                       <div className="space-y-1">
                         <div className="text-sm text-slate-500">Experience</div>
-                        <div className="font-medium">8 years</div>
+                        <div className="font-medium">{professional.experience}</div>
                       </div>
                     </div>
 
-                    <div>
+                    {/* <div>
                       <div className="text-sm text-slate-500 mb-2">Skills & Expertise</div>
                       <div className="flex flex-wrap gap-2">
                         <Badge variant="secondary">Electrical Wiring</Badge>
@@ -328,9 +350,12 @@ export default function HelperDashboard() {
                         <Badge variant="secondary">Lighting Systems</Badge>
                         <Badge variant="secondary">Appliance Repair</Badge>
                       </div>
+                    </div> */}
+                    <div className="flex gap-10"> 
+                    <Button className="w-full sm:w-auto">Edit Profile</Button>
+                    <Button onClick={handleLogOut}>Log Out</Button>
                     </div>
 
-                    <Button className="w-full sm:w-auto">Edit Profile</Button>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -342,21 +367,21 @@ export default function HelperDashboard() {
   )
 }
 
-function DesktopSidebar() {
+function DesktopSidebar(professional) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 flex items-center border-b border-slate-700">
         <div className="h-8 w-8 rounded-md bg-blue-500 flex items-center justify-center text-white font-bold mr-2">
-          H
+          
         </div>
-        <span className="font-bold text-lg">HelperApp</span>
+        <span className="font-bold text-lg">Dashboard</span>
       </div>
 
       <div className="flex-1 py-4">
         <nav className="space-y-1 px-2">
           <NavItem icon={Home} label="Dashboard" active />
-          <NavItem icon={LineChartIcon} label="Jobs" />
-          <NavItem icon={User} label="Profile" />
+          {/* <NavItem icon={LineChartIcon} label="Jobs" /> */}
+          {/* <NavItem icon={User} label="Profile" /> */}
         </nav>
       </div>
 
@@ -364,10 +389,10 @@ function DesktopSidebar() {
         <div className="flex items-center">
           <Avatar className="h-8 w-8 mr-2">
             <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Ramesh Kumar" />
-            <AvatarFallback>RK</AvatarFallback>
+            <AvatarFallback>{professional.firstname}</AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-medium text-sm text-white">Ramesh Kumar</div>
+            <div className="font-medium text-sm text-white"></div>
             <div className="text-xs text-slate-400">Electrician</div>
           </div>
         </div>

@@ -91,10 +91,10 @@ export async function signInConsumer(formData) {
     }
 
     user.lastLogin = Date.now();
-    await user.save();
+    const savedUser = await user.save();
     // await createSession(user._id.toString());
 
-    return { success: true, message: "User logged in successfully" };
+    return { success: true, message: "User logged in successfully", data: savedUser };
   } catch (error) {
     console.log("Authorization Error:", error);
     return null;
@@ -127,10 +127,11 @@ export async function signInHelper(formData) {
       return { success: false, message: "Incorrect Password" };
     }
 
-    await user.save();
+    const savedUser = await user.save();
     // await createSession(user._id.toString());
 
-    return { success: true, message: "User logged in successfully" };
+
+    return { success: true, message: "User logged in successfully", data : savedUser };
   } catch (error) {
     console.log("Authorization Error:", error);
     return null;

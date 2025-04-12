@@ -50,6 +50,7 @@ export default function SignUpForm() {
     console.log("Submitting:", values);
     const result = await signInConsumer(values);
     if (result.success) {
+      localStorage.setItem("id",result.data._id.toString());
       router.push("/jobs");
     } else {
       console.log("Signup failed:", result.message);
