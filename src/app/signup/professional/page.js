@@ -24,7 +24,7 @@ const formSchema = z.object({
   phone: z.string().min(10, { message: "Phone number must be at least 10 digits" }),
   location: z.string(),
   address: z.string(),
-  profession: z.enum(["carpenter", "plumber", "electrician"]),
+  profession: z.enum(["carpenter", "plumber", "electrician","babysitter","housemaid","watchman"]),
   experience: z.coerce.number().min(0, { message: "Experience must be a non-negative number" }),
   description: z.string().max(500).optional(),
 });
@@ -213,6 +213,9 @@ export default function SignUpForm() {
                             <SelectItem value="carpenter">Carpenter</SelectItem>
                             <SelectItem value="plumber">Plumber</SelectItem>
                             <SelectItem value="electrician">Electrician</SelectItem>
+                            <SelectItem value="housemaid">Housemaid</SelectItem>
+                            <SelectItem value="babysitter">Babysitter</SelectItem>
+                            <SelectItem value="watchman">Watchman</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

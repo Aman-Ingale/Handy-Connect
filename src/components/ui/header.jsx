@@ -1,61 +1,157 @@
 "use client"
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { PenToolIcon as Tool } from "lucide-react";
-import { Button } from "./button";
-import { useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useState } from "react";
-function Header({ refs }) {
-    const [hideLogin, setHideLogin] = useState(true)
-    useLayoutEffect(() => {
-        const id = localStorage.getItem("id");
-        if(id){
-            setHideLogin(false)
-        }
-      }, []);
-    const router = useRouter();
-    const [loadingLogin,setLoadingLogin] = useState(false)
-    const [loadingSignup,setLoadingSignup] = useState(false)
-    const handleClickLogin = () => {
-        setLoadingLogin(true)
-        setTimeout(() => {
-            router.push("/login");
-        }, 300);
-    }
-    const handleClickSignup = () => {
-        setLoadingSignup(true)
-        setTimeout(() => {
-            router.push("/signup");
-        }, 300);
-    }
-    const scrollToSection = (sectionRef, event) => {
-        event.preventDefault(); // Prevents the default anchor behavior
-        if (sectionRef.current) {
-          sectionRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      };
-    return (
-        <>
-            <header className="px-4 lg:px-6 h-14 flex items-center w-full justify-between">
-                <Link className="flex items-center justify-center" href="/">
-                    <Tool className="h-6 w-6 mr-2" />
-                    <span className="font-bold">LocalPro</span>
-                </Link>
-                <nav className="hidden md:flex gap-2 sm:gap-4 md:gap-6">
-                    <Link onClick={(e) => scrollToSection(refs.howItWorksRef, e)} className="text-sm font-medium hover:underline underline-offset-4" href="#">How It Works</Link>
-                    <Link onClick={(e) => scrollToSection(refs.categoriesRef, e)} className="text-sm font-medium hover:underline underline-offset-4" href="#">Categories</Link>
-                    <Link onClick={(e) => scrollToSection(refs.getStartedRef, e)} className="text-sm font-medium hover:underline underline-offset-4" href="#">For Professionals</Link>
-                </nav>
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Menu, X, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-                <div  className={`flex items-center gap-2 `} >
-                    <Button loading={loadingLogin}  onClick={handleClickLogin} variant="outline" className="">Login</Button>
-                    <Button loading={loadingSignup} onClick={handleClickSignup} className="">Signup</Button>
+export default function Header({ refs }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const pathname = usePathname();
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navItems = [
+    { name: "Home", href: "/", ref: refs?.aboutRef },
+    { name: "Services", href: "#services", ref: refs?.categoriesRef },
+    { name: "How It Works", href: "#how-it-works", ref: refs?.howItWorksRef },
+    { name: "Get Started", href: "#get-started", ref: refs?.getStartedRef },
+  ];
+
+  const handleNavClick = (ref) => {
+    if (ref?.current) {
+      ref.current.scrollIntoView({ behavior: "smooth" });
+      setIsMenuOpen(false);
+    }
+  };
+
+  return (
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-200",
+        isScrolled
+          ? "bg-background/80 backdrop-blur-md border-b"
+          : "bg-transparent"
+      )}
+    >
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              LocalPro
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navItems.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => handleNavClick(item.ref)}
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  pathname === item.href ? "text-primary" : "text-foreground"
+                )}
+              >
+                {item.name}
+              </button>
+            ))}
+          </nav>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="pl-9 w-[200px]"
+                placeholder="Search services..."
+              />
+            </div>
+            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+            <Link href="/login">
+              <Button variant="ghost">Login</Button>
+            </Link>
+            <Link href="/signup">
+              <Button>Sign Up</Button>
+            </Link>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden absolute top-16 left-0 right-0 bg-background border-b"
+          >
+            <div className="container mx-auto px-4 py-4">
+              <div className="space-y-4">
+                {navItems.map((item) => (
+                  <button
+                    key={item.name}
+                    onClick={() => handleNavClick(item.ref)}
+                    className={cn(
+                      "block w-full text-left text-sm font-medium transition-colors hover:text-primary",
+                      pathname === item.href ? "text-primary" : "text-foreground"
+                    )}
+                  >
+                    {item.name}
+                  </button>
+                ))}
+                <div className="pt-4 border-t">
+                  <div className="relative mb-4">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      className="pl-9 w-full"
+                      placeholder="Search services..."
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                      {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                    </Button>
+                    <div className="flex space-x-2">
+                      <Link href="/login">
+                        <Button variant="ghost">Login</Button>
+                      </Link>
+                      <Link href="/signup">
+                        <Button>Sign Up</Button>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-            </header>
-
-
-        </>
-    );
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
 }
-
-export default Header;

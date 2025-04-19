@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { signInHelper, signUpConsumer, signUpUser } from "@/actions/AuthAction";
+import { toast } from 'sonner';
 import {
   Card,
   CardContent,
@@ -50,10 +51,16 @@ export default function SignUpForm() {
     console.log("Submitting:", values);
     const result = await signInHelper(values);
     if (result.success) {
-      localStorage.setItem("id",result.data._id.toString());
+      toast.success('Login Succesfull', {
+        description: result.message,
+      })
+      localStorage.setItem("id",result.data.toString());
       router.push("/dashboard");
 
     } else {
+      toast.error('Invalid Credential', {
+        description: result.message,
+      })
       console.log("Signup failed:", result.message);
     }
   }

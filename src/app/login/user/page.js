@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -50,9 +51,15 @@ export default function SignUpForm() {
     console.log("Submitting:", values);
     const result = await signInConsumer(values);
     if (result.success) {
-      localStorage.setItem("id",result.data._id.toString());
+        toast.success('Login Succesfull', {
+          description: result.message,
+        })
+      localStorage.setItem("id",result.data.toString());
       router.push("/jobs");
     } else {
+            toast.error('Invalid Credential', {
+              description: result.message,
+            })
       console.log("Signup failed:", result.message);
     }
   }

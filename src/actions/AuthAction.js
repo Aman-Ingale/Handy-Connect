@@ -24,6 +24,10 @@ export async function signUpConsumer(formData) {
       lastname: data.lastname,
       email: data.email,
       password: hashedPassword,
+      gender : data.gender,
+      location : data.location,
+      address : data.address,
+      phone_number  : data.phone
     });
     await newUser.save();
     return { success: true, message: "USER REGISTERED SUCCESSFULLY" };
@@ -99,9 +103,10 @@ export async function signInConsumer(formData) {
 
     user.lastLogin = Date.now();
     const savedUser = await user.save();
+    const UserID = savedUser._id.toString()
     // await createSession(user._id.toString());
 
-    return { success: true, message: "User logged in successfully", data: savedUser };
+    return { success: true, message: "User logged in successfully", data : UserID };
   } catch (error) {
     console.log("Authorization Error:", error);
     return null;
@@ -135,10 +140,12 @@ export async function signInHelper(formData) {
     }
 
     const savedUser = await user.save();
+    const UserID = savedUser._id.toString()
+
     // await createSession(user._id.toString());
 
 
-    return { success: true, message: "User logged in successfully", data : savedUser };
+    return { success: true, message: "User logged in successfully", data : UserID };
   } catch (error) {
     console.log("Authorization Error:", error);
     return null;

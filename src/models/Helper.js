@@ -20,12 +20,13 @@ const HelperSchema = new mongoose.Schema({
   phone_number : {type : String, required : true,default : "-"},
   registration_on : {type:Date, default:Date.now()},
   ratings : [{
+    id: Number,
     stars:Number,
     review:String,
   },],
+  address : String,
   jobs : [{
     customer_name : String,
-    // address : String,
     job_description : String,
     amount : Number,
     job_date : Date,

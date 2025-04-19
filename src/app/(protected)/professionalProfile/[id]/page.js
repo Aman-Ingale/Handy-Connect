@@ -13,7 +13,6 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getProfessionalData } from "@/actions/fetchActions"
 
-const reviews = []
 
 const workHistory = [
   {
@@ -67,14 +66,15 @@ export default function HelperProfile({ params }) {
   const [activeTab, setActiveTab] = useState("overview")
   const [professional, setProfessional] = useState({})
   const {id} = use(params)
-    useEffect(() => {
-      async function getData() {
-        const professional = await getProfessionalData(id);
-        setProfessional(professional)
-        console.log(professional)
-      }
-      getData();
-    }, [])
+  useEffect(() => {
+    async function getData() {
+      const professional = await getProfessionalData(id);
+      setProfessional(professional)
+      console.log(professional)
+    }
+    getData();
+  }, [])
+  const reviews = professional.ratings || [];
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-5xl mx-auto">
@@ -94,16 +94,15 @@ export default function HelperProfile({ params }) {
 
                   <div className="flex items-center justify-center mt-2">
                     <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className="h-5 w-5 text-amber-500"
-                          fill={star <= 4.6 ? "currentColor" : "none"}
-                        />
-                      ))}
+                    {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-4 w-4 ${i < professional.total_stars-1 ? "text-amber-500 fill-amber-500" : "text-slate-300"}`}
+                              />
+                            ))}
                     </div>
                     <span className="ml-2 font-medium">{professional.total_stars}</span>
-                    <span className="text-slate-500 ml-1">(42)</span>
+                    <span className="text-slate-500 ml-1">({professional.total_ratings})</span>
                   </div>
 
                   <div className="flex justify-center gap-2 mt-4">
@@ -340,34 +339,34 @@ export default function HelperProfile({ params }) {
                     <Separator className="my-6" />
 
                     <div className="space-y-6">
-                      {reviews.map((review) => (
-                        <div key={review.id} className="border rounded-lg p-4">
+                      {reviews.map((review,index) => (
+                        <div key={index} className="border rounded-lg p-4">
                           <div className="flex justify-between mb-2">
-                            <div className="font-medium">{review.customer}</div>
-                            <div className="text-sm text-slate-500">{review.date}</div>
+                            {/* <div className="font-medium">{review.customer}</div> */}
+                            {/* <div className="text-sm text-slate-500">{review.date}</div> */}
                           </div>
 
                           <div className="flex items-center mb-2">
                             {Array.from({ length: 5 }).map((_, i) => (
                               <Star
                                 key={i}
-                                className={`h-4 w-4 ${i < review.rating ? "text-amber-500 fill-amber-500" : "text-slate-300"}`}
+                                className={`h-4 w-4 ${i < review.stars ? "text-amber-500 fill-amber-500" : "text-slate-300"}`}
                               />
                             ))}
-                            <Badge variant="outline" className="ml-3 text-xs">
+                            {/* <Badge variant="outline" className="ml-3 text-xs">
                               {review.service}
-                            </Badge>
+                            </Badge> */}
                           </div>
 
-                          <p className="text-slate-600">{review.comment}</p>
+                          <p className="text-slate-600">{review.review}</p>
                         </div>
                       ))}
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button variant="outline" className="w-full">
+                    {/* <Button variant="outline" className="w-full">
                       View All Reviews
-                    </Button>
+                    </Button> */}
                   </CardFooter>
                 </Card>
               </TabsContent>

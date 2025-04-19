@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { CalendarIcon, Home, LineChartIcon, Menu, Star, User, Wallet } from "lucide-react"
+import { CalendarIcon, Home, LineChartIcon, Menu, Star, User, Wallet, LogOut, Settings, Bell, Search } from "lucide-react"
 import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
-
+import { motion } from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -11,9 +11,13 @@ import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
 import { getProfessionalData } from "@/actions/fetchActions"
-import { ErrorBoundary } from "next/dist/client/components/error-boundary"
 import { useRouter } from "next/navigation"
+import { cn } from "@/lib/utils"
+import Link from "next/link"
+import { format } from 'date-fns';
+
 const earningsData = [
   { name: "Jan", earnings: 4000 },
   { name: "Feb", earnings: 3000 },
@@ -22,65 +26,35 @@ const earningsData = [
   { name: "May", earnings: 6000 },
 ]
 
-const recentJobs = [
-  {
-    id: 1,
-    customer: "Priya Sharma",
-    service: "Electrical Repair",
-    date: "2023-04-10",
-    amount: 1200,
-    rating: 5,
-  },
-  {
-    id: 2,
-    customer: "Amit Patel",
-    service: "Fan Installation",
-    date: "2023-04-08",
-    amount: 800,
-    rating: 4,
-  },
-  {
-    id: 3,
-    customer: "Neha Gupta",
-    service: "Switch Replacement",
-    date: "2023-04-05",
-    amount: 500,
-    rating: 5,
-  },
-  {
-    id: 4,
-    customer: "Raj Malhotra",
-    service: "Wiring Check",
-    date: "2023-04-02",
-    amount: 1500,
-    rating: 4,
-  },
-]
+
 export default function HelperDashboard() {
   const [professional, setProfessional] = useState({});
   const [professionalRating, setProfessionalRating] = useState(professional.total_ratings)
   const [nameInitial, setNameInitial] = useState("")
-      const router = useRouter();
+  const router = useRouter();
+  const [date, setDate] = useState(new Date())
   
   function handleLogOut() {
     localStorage.removeItem("id")
     router.push("/")
   }
-  try {
-    useEffect(() => {
-      async function getData() {
+  
+  useEffect(() => {
+    async function getData() {
+      try {
         const professional = await getProfessionalData(localStorage.getItem("id"));
         setProfessional(professional)
-        console.log(professional)
+        setNameInitial(professional.name?.charAt(0) || "")
+      } catch (error) {
+        console.error(error)
       }
-      getData();
-    }, [])
-  } catch (error) {
-    console.log(error)
-  }
-  const [date, setDate] = useState(new Date())
+    }
+    getData();
+  }, [])
+  const recentJobs = professional.jobs
+
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Mobile Navigation */}
       <Sheet>
         <SheetTrigger asChild>
@@ -88,365 +62,278 @@ export default function HelperDashboard() {
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="p-0 bg-slate-800 text-white">
-          <MobileSidebar />
+        <SheetContent side="left" className="p-0 bg-background">
+          <MobileSidebar professional={professional} handleLogOut={handleLogOut} />
         </SheetContent>
       </Sheet>
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:block bg-slate-800 text-white h-screen sticky top-0 w-64">
-          <DesktopSidebar professional={professional} />
+        <aside className="hidden md:block bg-background border-r h-screen sticky top-0 w-64">
+          <DesktopSidebar professional={professional} handleLogOut={handleLogOut} />
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
-          <div className="max-w-6xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
-                <p className="text-slate-500">Welcome back, {professional.firstname} {professional.lastname}</p>
-              </div>
+        <main className="flex-1 p-4 md:p-8">
+          {/* Top Bar */}
+          <div className="flex items-center justify-between mb-8">
+              <h1 className="text-4xl font-bold text-center mb-5">Dashboard</h1>
+            <div  className="relative w-full max-w-md invisible">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="pl-9"
+                placeholder="Search..."
+              />
+            </div>
+            <div className="flex items-center gap-4">
 
+              {/* <Button variant="ghost" size="icon">
+                <Bell className="h-5 w-5" />
+              </Button> */}
+              <Button variant="ghost" size="icon">
+                {/* <Settings className="h-5 w-5" /> */}
+              </Button>
+              <Link href="/editProfessional">
               <Avatar>
-                <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Ramesh Kumar" />
-                <AvatarFallback></AvatarFallback>
+                <AvatarImage src={professional.profile_picture} />
+                <AvatarFallback>{nameInitial}</AvatarFallback>
               </Avatar>
+              </Link>
             </div>
+          </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Card className="bg-blue-50 border-blue-100">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2">
-                    <Wallet className="h-5 w-5 text-blue-500" />
-                    Total Earnings
-                  </CardTitle>
-                  <CardDescription>This month</CardDescription>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
+                  <Wallet className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">{professional.total_earnings}</div>
+                  <div className="text-2xl font-bold">₹{professional.total_earnings || 0}</div>
+                  <p className="text-xs text-muted-foreground">+20.1% from last month</p>
                 </CardContent>
               </Card>
+            </motion.div>
 
-              <Card className="bg-green-50 border-green-100">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2">
-                    <CalendarIcon className="h-5 w-5 text-green-500" />
-                    Completed Jobs
-                  </CardTitle>
-                  <CardDescription>Total transactions</CardDescription>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Completed Jobs</CardTitle>
+                  <Home className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">{professional.completed_jobs}</div>
+                  <div className="text-2xl font-bold">{professional.completed_jobs || 0}</div>
+                  <p className="text-xs text-muted-foreground">+12% from last month</p>
                 </CardContent>
               </Card>
+            </motion.div>
 
-              <Card className="bg-amber-50 border-amber-100">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-amber-500" />
-                    Rating
-                  </CardTitle>
-                  <CardDescription>Customer Feedback</CardDescription>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
+                  <Star className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">{professionalRating} ★</div>
+                  <div className="text-2xl font-bold">{professional.total_ratings || 0}</div>
+                  <p className="text-xs text-muted-foreground">+2.5% from last month</p>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
+          </div>
 
-            {/* Main Content Tabs */}
-            <Tabs defaultValue="dashboard" className="w-full">
-              <TabsList className="grid grid-cols-3 w-full max-w-md">
-                <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-                {/* <TabsTrigger value="jobs">Jobs</TabsTrigger> */}
-                <TabsTrigger value="profile">Profile</TabsTrigger>
-              </TabsList>
-
-              {/* Dashboard Tab */}
-              <TabsContent value="dashboard" className="space-y-6 mt-6">
-                {/* Earnings Chart */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Earnings Overview</CardTitle>
-                    <CardDescription>Monthly earnings trend</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
+          {/* Charts and Calendar */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="lg:col-span-2"
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle>Earnings Overview</CardTitle>
+                  <CardDescription>Your earnings for the past 5 months</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={earningsData}>
                         <XAxis dataKey="name" />
                         <YAxis />
                         <Tooltip />
-                        <Bar dataKey="earnings" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="earnings" fill="hsl(var(--primary))" />
                       </BarChart>
                     </ResponsiveContainer>
-                  </CardContent>
-                </Card>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-                {/* Recent Jobs */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recent Jobs</CardTitle>
-                    <CardDescription>Your latest completed services</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b">
-                            <th className="text-left py-3 px-4">Customer</th>
-                            <th className="text-left py-3 px-4">Service</th>
-                            <th className="text-left py-3 px-4">Date</th>
-                            <th className="text-left py-3 px-4">Amount</th>
-                            <th className="text-left py-3 px-4">Rating</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {recentJobs.map((job) => (
-                            <tr key={job.id} className="border-b hover:bg-slate-50">
-                              <td className="py-3 px-4">{job.customer}</td>
-                              <td className="py-3 px-4">{job.service}</td>
-                              <td className="py-3 px-4">{new Date(job.date).toLocaleDateString()}</td>
-                              <td className="py-3 px-4">₹{job.amount}</td>
-                              <td className="py-3 px-4">
-                                <div className="flex items-center">
-                                  {job.rating}
-                                  <Star className="h-4 w-4 text-amber-500 ml-1" fill="currentColor" />
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-end">
-                    <Button variant="outline">View All Jobs</Button>
-                  </CardFooter>
-                </Card>
-              </TabsContent>
-
-              {/* Jobs Tab */}
-              <TabsContent value="jobs" className="space-y-6 mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Work Schedule</CardTitle>
-                    <CardDescription>Track your appointments</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col md:flex-row gap-6">
-                      <div className="md:w-1/2">
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          onSelect={(date) => date && setDate(date)}
-                          className="rounded-md border"
-                        />
-                      </div>
-                      <div className="md:w-1/2">
-                        <h3 className="text-lg font-medium mb-4">Selected Date: {date.toLocaleDateString()}</h3>
-                        <div className="text-center p-8 border rounded-lg bg-slate-50">
-                          <p className="text-slate-500">No jobs scheduled for this date</p>
-                          <Button className="mt-4">Add New Job</Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Job History</CardTitle>
-                    <CardDescription>Your completed services</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {recentJobs.map((job) => (
-                        <div
-                          key={job.id}
-                          className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border rounded-lg hover:bg-slate-50"
-                        >
-                          <div className="space-y-1">
-                            <div className="font-medium">{job.service}</div>
-                            <div className="text-sm text-slate-500">Customer: {job.customer}</div>
-                            <div className="text-sm text-slate-500">{new Date(job.date).toLocaleDateString()}</div>
-                          </div>
-                          <div className="flex flex-col items-end mt-2 sm:mt-0">
-                            <div className="font-medium">₹{job.amount}</div>
-                            <div className="flex items-center mt-1">
-                              <span className="mr-1">Rating:</span>
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-4 w-4 ${i < job.rating ? "text-amber-500 fill-amber-500" : "text-slate-300"}`}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Profile Tab */}
-              <TabsContent value="profile" className="space-y-6 mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Profile</CardTitle>
-                    <CardDescription>Personal information</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
-                      <Avatar className="h-24 w-24">
-                        <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Ramesh Kumar" />
-                        <AvatarFallback className="text-2xl">{
-                          nameInitial}</AvatarFallback>
-                      </Avatar>
-
-                      <div className="space-y-2 text-center sm:text-left">
-                        <div className="text-xl font-bold">{professional.firstname} {professional.lastname}</div>
-                        <div className="text-slate-500">{professional.profession}</div>
-                        <div className="flex items-center justify-center sm:justify-start">
-                          <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-                          <span className="ml-1">{professionalRating} ({professional.total_ratings} reviews)</span>
-                        </div>
-                        <Badge variant="outline" className="mt-1">
-                          Verified Professional
-                        </Badge>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-1">
-                        <div className="text-sm text-slate-500">Phone Number</div>
-                        <div className="font-medium">{professional.phone_number}</div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="text-sm text-slate-500">Email</div>
-                        <div className="font-medium">{professional.email}</div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="text-sm text-slate-500">Location</div>
-                        <div className="font-medium">{professional.location}</div>
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="text-sm text-slate-500">Experience</div>
-                        <div className="font-medium">{professional.experience}</div>
-                      </div>
-                    </div>
-
-                    {/* <div>
-                      <div className="text-sm text-slate-500 mb-2">Skills & Expertise</div>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary">Electrical Wiring</Badge>
-                        <Badge variant="secondary">Circuit Installation</Badge>
-                        <Badge variant="secondary">Lighting Systems</Badge>
-                        <Badge variant="secondary">Appliance Repair</Badge>
-                      </div>
-                    </div> */}
-                    <div className="flex gap-10"> 
-                    <Button className="w-full sm:w-auto">Edit Profile</Button>
-                    <Button onClick={handleLogOut}>Log Out</Button>
-                    </div>
-
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle>Calendar</CardTitle>
+                  <CardDescription>Upcoming appointments</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    className="rounded-md border"
+                  />
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
+
+          {/* Recent Jobs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Jobs</CardTitle>
+                <CardDescription>Your most recent completed jobs</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {recentJobs?.map((job,index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-4 rounded-lg border"
+                    >
+                      <div className="space-y-1">
+                        <p className="font-medium">{job.customer_name}</p>
+                        <p className="text-sm text-muted-foreground">{job.job_description}</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="font-medium">₹{job.amount}</p>
+                          {/* <p className="text-sm text-muted-foreground">{ format(new Date(job.date).getTime(), 'yyyy-MM-dd')}</p> */}
+                        </div>
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                          <span className="ml-1 text-sm">{job.job_ratings.stars }</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </main>
       </div>
     </div>
   )
 }
 
-function DesktopSidebar(professional) {
+function DesktopSidebar({ professional, handleLogOut }) {
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-4 flex items-center border-b border-slate-700">
-        <div className="h-8 w-8 rounded-md bg-blue-500 flex items-center justify-center text-white font-bold mr-2">
-          
+    <div className="flex flex-col h-full p-4">
+      {/* <div className="flex items-center gap-4 mb-8">
+        <Avatar>
+          < Link href="/editProfessional">
+          <AvatarImage src={professional.profile_picture} />
+          </Link>
+          <AvatarFallback>{professional.name?.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div>
+          <p className="font-medium">{professional.name}</p>
+          <p className="text-sm text-muted-foreground">{professional.profession}</p>
         </div>
-        <span className="font-bold text-lg">Dashboard</span>
-      </div>
+      </div> */}
 
-      <div className="flex-1 py-4">
-        <nav className="space-y-1 px-2">
-          <NavItem icon={Home} label="Dashboard" active />
-          {/* <NavItem icon={LineChartIcon} label="Jobs" /> */}
-          {/* <NavItem icon={User} label="Profile" /> */}
-        </nav>
-      </div>
+      <nav className="flex-1 space-y-1">
+        <NavItem icon={Home} label="Dashboard" active />
+        {/* <NavItem icon={User} label="Profile" />
+        <NavItem icon={CalendarIcon} label="Appointments" />
+        <NavItem icon={Wallet} label="Earnings" />
+        <NavItem icon={LineChartIcon} label="Analytics" /> */}
+      </nav>
 
-      <div className="p-4 border-t border-slate-700">
-        <div className="flex items-center">
-          <Avatar className="h-8 w-8 mr-2">
-            <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Ramesh Kumar" />
-            <AvatarFallback>{professional.firstname}</AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="font-medium text-sm text-white"></div>
-            <div className="text-xs text-slate-400">Electrician</div>
-          </div>
-        </div>
+      <div className="mt-auto">
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={handleLogOut}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Logout
+        </Button>
       </div>
     </div>
   )
 }
 
-function MobileSidebar() {
+function MobileSidebar({ professional, handleLogOut }) {
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-4 flex items-center border-b border-slate-700">
-        <div className="h-8 w-8 rounded-md bg-blue-500 flex items-center justify-center text-white font-bold mr-2">
-          H
+    <div className="flex flex-col h-full p-4">
+      {/* <div className="flex items-center gap-4 mb-8">
+        <Avatar>
+          <AvatarImage src={professional.profile_picture} />
+          <AvatarFallback>{professional.name?.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div>
+          <p className="font-medium">{professional.name}</p>
+          <p className="text-sm text-muted-foreground">{professional.profession}</p>
         </div>
-        <span className="font-bold text-lg">HelperApp</span>
-      </div>
+      </div> */}
 
-      <div className="flex-1 py-4">
-        <nav className="space-y-1 px-2">
-          <NavItem icon={Home} label="Dashboard" active />
-          <NavItem icon={LineChartIcon} label="Jobs" />
-          <NavItem icon={User} label="Profile" />
-        </nav>
-      </div>
+      <nav className="flex-1 space-y-1">
+        <NavItem icon={Home} label="Dashboard" active />
+        {/* <NavItem icon={User} label="Profile" />
+        <NavItem icon={CalendarIcon} label="Appointments" />
+        <NavItem icon={Wallet} label="Earnings" />
+        <NavItem icon={LineChartIcon} label="Analytics" /> */}
+      </nav>
 
-      <div className="p-4 border-t border-slate-700">
-        <div className="flex items-center">
-          <Avatar className="h-8 w-8 mr-2">
-            <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Ramesh Kumar" />
-            <AvatarFallback>RK</AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="font-medium text-sm text-white">Ramesh Kumar</div>
-            <div className="text-xs text-slate-400">Electrician</div>
-          </div>
-        </div>
+      <div className="mt-auto">
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={handleLogOut}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Logout
+        </Button>
       </div>
     </div>
   )
 }
 
-function NavItem({
-  icon: Icon,
-  label,
-  active = false,
-}) {
+function NavItem({ icon: Icon, label, active = false }) {
   return (
     <Button
-      variant="ghost"
-      className={`w-full justify-start ${active ? "bg-slate-700 text-white" : "text-slate-300 hover:text-white hover:bg-slate-700"}`}
+      variant={active ? "secondary" : "ghost"}
+      className={cn("w-full justify-start", active && "bg-primary/10")}
     >
-      <Icon className="h-5 w-5 mr-2" />
-      <span>{label}</span>
+      <Icon className="mr-2 h-4 w-4" />
+      {label}
     </Button>
   )
 }
+
+

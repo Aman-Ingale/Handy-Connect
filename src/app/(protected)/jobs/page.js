@@ -21,8 +21,8 @@ import { getHelpers } from "@/actions/fetchActions";
 import Link from "next/link";
 
 
-const categories = ["carpenter", "electrician", "plumber"];
-const locations = ["Anytown", "Somewhere", "Nowhere"];
+const categories = ["carpenter", "electrician", "plumber","babysitter","watchman","housemaid"];
+const locations = ["Pune", "Mumbai", "Ahmedabad","Delhi","Hyderabad","Nagpur"];
 
 export default function JobsPage() {
   function handleConnect(id){
@@ -65,11 +65,12 @@ export default function JobsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Link href="/userProfile" >
-      <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+      <span className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
         <User className="w-5 h-5 text-gray-500" />
-      </div>
+      </span>
       </Link>
-      <h1 className="text-4xl font-bold text-center mb-10">Find Local Professionals</h1>
+      <h1 className="text-4xl font-bold text-center mb-5">Jobs</h1>
+      <h2 className="text-3xl font-semibold text-center mb-10">Find Local Professionals</h2>
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar */}
         <aside className="w-full lg:w-1/4 bg-muted/20 p-4 rounded-xl shadow-md">
@@ -154,7 +155,7 @@ export default function JobsPage() {
                   <p className="font-bold text-primary text-center">{pro.profession}</p>
                 </CardHeader>
                 <CardContent className="w-full text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">{pro.location}</p>
+                  <p className="text-sm text-muted-foreground">{pro.address}</p>
                   <div className="flex items-center justify-center">
                     <MapPin className="h-4 w-4 mr-1 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">{pro.location}</span>
