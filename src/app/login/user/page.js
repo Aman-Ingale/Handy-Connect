@@ -49,8 +49,13 @@ export default function SignUpForm() {
 
   async function onSubmit(values) {
     console.log("Submitting:", values);
-    const result = await signInConsumer(values);
-    if (result.success) {
+        const r = await fetch("/api/login/client",{
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(values),
+    });
+    const result = await r.json();
+        if (result.success) {
         toast.success('Login Succesfull', {
           description: result.message,
         })

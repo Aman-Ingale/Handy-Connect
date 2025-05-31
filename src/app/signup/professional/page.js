@@ -51,7 +51,12 @@ export default function SignUpForm() {
 
   async function onSubmit(values) {
     console.log("Submitting:", values);
-    const result = await signUpHelper(values);
+       const r = await fetch("/api/signup/provider",{
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(values),
+    });
+    const result = await r.json();
     if (result.success) {
       router.push("/login/professional");
     } else {
