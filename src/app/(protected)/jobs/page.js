@@ -37,9 +37,11 @@ export default function JobsPage() {
 
   useEffect(()=>{
     async function getAllProfessinals() {
-      const x = await getHelpers();
-      console.log(x)
-      setProfessionals(x);
+    const x = await fetch("/api/providers",{
+      method: 'GET',
+    });      
+    const result = await x.json();
+      setProfessionals(result);
     }
     getAllProfessinals()
   },[])

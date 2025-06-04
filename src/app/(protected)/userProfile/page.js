@@ -1,134 +1,204 @@
 "use client"
-
 import { useEffect, useState } from "react"
-import {
-  Bell,
-  Calendar,
-  CreditCard,
-  Edit,
-  Heart,
-  LogOut,
-  Mail,
-  MapPin,
-  Phone,
-  Settings,
-  ShoppingBag,
-  Star,
-  User,
-} from "lucide-react"
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { motion } from "framer-motion"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent } from "@/components/ui/tabs"
-import { getUserData } from "@/actions/fetchActions"
-import { useRouter } from "next/navigation"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Loader2, User, Mail, Phone, MapPin, Edit2, Save } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-export default function CustomerProfile() {
-  const [User, setUser] = useState({
-    firstname: "", 
+export default function DashboardPage() {
+  const [isEditing, setIsEditing] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const id = { id: localStorage.getItem("id") };
+  const [profile, setProfile] = useState({
+    firstname: "",
     lastname: "",
     email: "",
-    phone_number: "",
     gender: "",
-    registration_on: "",
-  })  // Initialize with default values
-  const router = useRouter();
+    phone_number: "",
+    location: "",
+    address: "",
+  })
 
-  function handleLogOut() {
-    localStorage.removeItem("id")
-    router.push("/")
+  const handleSave = async () => {
+    setIsLoading(true)
+    // Simulate API call
+    const res = await fetch(`/api/profile/client/${id.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profile),
+    });
+    const result = res.json();
+    if (result.success) {
+      console.log("Update succefull")
+      console.log(result.data)
+    }
+    else {
+      console.log("Something went wrong")
+    }
+    setIsLoading(false)
+    setIsEditing(false)
   }
-
   useEffect(() => {
     async function getData() {
-      const x = await getUserData(localStorage.getItem("id"));
-      setUser(x)
-      console.log(x)
+      const x = await fetch(`/api/profile/client/${id.id}`, {
+        method: 'GET',
+      });
+      const result = await x.json();
+      console.log(result)
+      setProfile(result)
     }
     getData();
   }, [])
-
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row gap-6 mb-8">
-          <div className="md:w-1/3">
-            <Card className="border-none shadow-md">
-              <CardContent className="pt-6 flex flex-col items-center">
-                <Avatar className="h-32 w-32 mb-4">
-                  <AvatarImage src="/placeholder.svg?height=128&width=128" alt="Ananya Desai" />
-                  <AvatarFallback className="text-3xl"></AvatarFallback>
-                </Avatar>
-
-                <div className="text-center">
-                  <h1 className="text-2xl font-bold">{User.firstname || "N/A"} {User.lastname || "N/A"}</h1>
-                  <p className="text-slate-500">Customer</p>
-
-                  <div className="flex justify-center gap-2 mt-4 mb-4">
-                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Premium Member</Badge>
-                  </div>
+    <div className="container mx-auto p-4 space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-2xl">Profile</CardTitle>
+            <Button
+              variant="outline"
+              onClick={() => setIsEditing(!isEditing)}
+              disabled={isLoading}
+            >
+              {isEditing ? (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Changes
+                </>
+              ) : (
+                <>
+                  <Edit2 className="mr-2 h-4 w-4" />
+                  Edit Profile
+                </>
+              )}
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6">
+              <div className="flex items-center space-x-4">
+                <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-10 w-10 text-primary" />
                 </div>
-                <Button onClick={handleLogOut}>Log Out</Button>
-
-                <Separator className="my-6" />
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="md:w-2/3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle>Personal Information</CardTitle>
-                  <CardDescription>Manage your personal details</CardDescription>
+                  <h3 className="text-lg font-semibold">{profile.firstname || ""}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {profile.description}
+                  </p>
                 </div>
-                <Button variant="outline" size="icon">
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-1">
-                    <div className="text-sm text-slate-500">Full Name</div>
-                    <div className="font-medium">{User.firstname || "N/A"} {User.lastname || "N/A"}</div>
-                  </div>
+              </div>
 
-                  <div className="space-y-1">
-                    <div className="text-sm text-slate-500">Email</div>
-                    <div className="font-medium">{User.email || "N/A"}</div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="text-sm text-slate-500">Phone Number</div>
-                    <div className="font-medium">{User.phone_number || "N/A"}</div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="text-sm text-slate-500">Date of Birth</div>
-                    <div className="font-medium">15 June 1990</div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="text-sm text-slate-500">Gender</div>
-                    <div className="font-medium">{User.gender || "N/A"}</div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="text-sm text-slate-500">Member Since</div>
-                    <div className="font-medium">
-                      {User.registration_on ? new Date(User.registration_on).getFullYear() : "N/A"}
-                    </div>
-                  </div>
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">First Name</Label>
+                  <Input
+                    id="name"
+                    value={profile.firstname || ""}
+                    onChange={(e) =>
+                      setProfile({firstname: e.target.value })
+                    }
+                    disabled={!isEditing}
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="lastname">Last Name</Label>
+                  <Input
+                    id="lastname"
+                    value={profile.lastname || ""}
+                    onChange={(e) =>
+                      setProfile({ lastname: e.target.value })
+                    }
+                    disabled={!isEditing}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={profile.email || ""}
+                    onChange={(e) =>
+                      setProfile({ ...profile, email: e.target.value })
+                    }
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={profile.phone_number || ""}
+                    onChange={(e) =>
+                      setProfile({ phone: e.target.value })
+                    }
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="grid gap-2 w-20">
+                  <Label htmlFor="gender">Gender</Label>
+                  <select
+                    id="gender"
+                    value={profile.gender || ""}
+                    onChange={(e) =>
+                      setProfile({  gender: e.target.value })
+                    }
+                    disabled={!isEditing}
+                  >
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    value={profile.address || ""}
+                    onChange={(e) =>
+                      setProfile({  address: e.target.value })
+                    }
+                    disabled={!isEditing}
+                  />
+                </div>
+    
+
+                
+              </div>
+
+              {isEditing && (
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditing(false)}
+                    disabled={isLoading}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSave} disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save Changes"
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   )
-}
+} 

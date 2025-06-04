@@ -33,18 +33,24 @@ export default function HelperDashboard() {
   const [nameInitial, setNameInitial] = useState("")
   const router = useRouter();
   const [date, setDate] = useState(new Date())
-  
+  const id = localStorage.getItem("id")
   function handleLogOut() {
     localStorage.removeItem("id")
     router.push("/")
   }
-  
+
   useEffect(() => {
     async function getData() {
       try {
-        const professional = await getProfessionalData(localStorage.getItem("id"));
-        setProfessional(professional)
-        setNameInitial(professional.name?.charAt(0) || "")
+        const x = await fetch(`/api/details/${id}`, {
+          method: 'GET',
+        });
+        console.log(x)
+
+        const result = await x.json();
+        setProfessional(result)
+        console.log(result)
+        setNameInitial(professional.firstname?.charAt(0) || "")
       } catch (error) {
         console.error(error)
       }
@@ -55,30 +61,15 @@ export default function HelperDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Mobile Navigation */}
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="md:hidden fixed top-4 left-4 z-40">
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="p-0 bg-background">
-          <MobileSidebar professional={professional} handleLogOut={handleLogOut} />
-        </SheetContent>
-      </Sheet>
 
       <div className="flex">
-        {/* Desktop Sidebar */}
-        <aside className="hidden md:block bg-background border-r h-screen sticky top-0 w-64">
-          <DesktopSidebar professional={professional} handleLogOut={handleLogOut} />
-        </aside>
 
         {/* Main Content */}
         <main className="flex-1 p-4 md:p-8">
           {/* Top Bar */}
           <div className="flex items-center justify-between mb-8">
-              <h1 className="text-4xl font-bold text-center mb-5">Dashboard</h1>
-            <div  className="relative w-full max-w-md invisible">
+            <h1 className="text-4xl font-bold text-center mb-5">Dashboard</h1>
+            <div className="relative w-full max-w-md invisible">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 className="pl-9"
@@ -94,10 +85,10 @@ export default function HelperDashboard() {
                 {/* <Settings className="h-5 w-5" /> */}
               </Button>
               <Link href="/editProfessional">
-              <Avatar>
-                <AvatarImage src={professional.profile_picture} />
-                <AvatarFallback>{nameInitial}</AvatarFallback>
-              </Avatar>
+                <Avatar>
+                  <AvatarImage src={professional.profile_picture} />
+                  <AvatarFallback>{nameInitial}</AvatarFallback>
+                </Avatar>
               </Link>
             </div>
           </div>
@@ -219,7 +210,7 @@ export default function HelperDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentJobs?.map((job,index) => (
+                  {recentJobs?.map((job, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between p-4 rounded-lg border"
@@ -235,7 +226,7 @@ export default function HelperDashboard() {
                         </div>
                         <div className="flex items-center">
                           <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <span className="ml-1 text-sm">{job.job_ratings.stars }</span>
+                          <span className="ml-1 text-sm">{job.job_ratings.stars}</span>
                         </div>
                       </div>
                     </div>
@@ -250,90 +241,6 @@ export default function HelperDashboard() {
   )
 }
 
-function DesktopSidebar({ professional, handleLogOut }) {
-  return (
-    <div className="flex flex-col h-full p-4">
-      {/* <div className="flex items-center gap-4 mb-8">
-        <Avatar>
-          < Link href="/editProfessional">
-          <AvatarImage src={professional.profile_picture} />
-          </Link>
-          <AvatarFallback>{professional.name?.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="font-medium">{professional.name}</p>
-          <p className="text-sm text-muted-foreground">{professional.profession}</p>
-        </div>
-      </div> */}
 
-      <nav className="flex-1 space-y-1">
-        <NavItem icon={Home} label="Dashboard" active />
-        {/* <NavItem icon={User} label="Profile" />
-        <NavItem icon={CalendarIcon} label="Appointments" />
-        <NavItem icon={Wallet} label="Earnings" />
-        <NavItem icon={LineChartIcon} label="Analytics" /> */}
-      </nav>
-
-      <div className="mt-auto">
-        <Button
-          variant="ghost"
-          className="w-full justify-start"
-          onClick={handleLogOut}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
-      </div>
-    </div>
-  )
-}
-
-function MobileSidebar({ professional, handleLogOut }) {
-  return (
-    <div className="flex flex-col h-full p-4">
-      {/* <div className="flex items-center gap-4 mb-8">
-        <Avatar>
-          <AvatarImage src={professional.profile_picture} />
-          <AvatarFallback>{professional.name?.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="font-medium">{professional.name}</p>
-          <p className="text-sm text-muted-foreground">{professional.profession}</p>
-        </div>
-      </div> */}
-
-      <nav className="flex-1 space-y-1">
-        <NavItem icon={Home} label="Dashboard" active />
-        {/* <NavItem icon={User} label="Profile" />
-        <NavItem icon={CalendarIcon} label="Appointments" />
-        <NavItem icon={Wallet} label="Earnings" />
-        <NavItem icon={LineChartIcon} label="Analytics" /> */}
-      </nav>
-
-      <div className="mt-auto">
-        <Button
-          variant="ghost"
-          className="w-full justify-start"
-          onClick={handleLogOut}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
-      </div>
-    </div>
-  )
-}
-
-function NavItem({ icon: Icon, label, active = false }) {
-  return (
-    <Button
-      variant={active ? "secondary" : "ghost"}
-      className={cn("w-full justify-start", active && "bg-primary/10")}
-    >
-      <Icon className="mr-2 h-4 w-4" />
-      {label}
-    </Button>
-  )
-}
 
 

@@ -68,7 +68,12 @@ export default function HelperProfile({ params }) {
   const {id} = use(params)
   useEffect(() => {
     async function getData() {
-      const professional = await getProfessionalData(id);
+      const x = await fetch(`/api/details/${id}`,{
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(id),
+    });
+      const professional = await x.json();
       setProfessional(professional)
       console.log(professional)
     }

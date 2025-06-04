@@ -24,3 +24,9 @@ export async function getUserData(id){
     const plainProfessionals = JSON.parse(JSON.stringify(professional))
     return plainProfessionals
 }
+export async function getProviderData(id){
+    await dbConnect();
+    const professional = await HelperModel.findById(id);
+    const plainProfessionals = JSON.parse(JSON.stringify(professional))
+    return plainProfessionals
+}
