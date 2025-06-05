@@ -36,7 +36,7 @@ HandyConnect is a modern freelancing platform tailored to connect everyday clien
 ## 👥 User Roles
 
 - **Clients** – Users seeking services
-- **Professionals** – Skilled local experts (respectfully referred, not “freelancers” or “workers”)
+- **Providers** – Skilled local experts or service providers (respectfully referred, not “freelancers” or “workers”)
 
 ---
 
