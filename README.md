@@ -23,13 +23,8 @@ HandyConnect is a modern freelancing platform tailored to connect everyday clien
 | Layer         | Technology                         |
 |--------------|-------------------------------------|
 | Frontend     | **Next.js**, **Tailwind CSS**, **Shadcn UI** |
-| Backend      | **Node.js**, **Express.js**         |
-| Database     | **MongoDB (Atlas)**                 |
-| Auth         | **Better Auth** with JWT            |
-| Charts       | **Recharts**                        |
-| Automation   | **Puppeteer**                       |
-| Email        | **Mailgun API**                     |
-| Deployment   | **Vercel / Render**                 |
+| Backend      | **Next.js**, **Node.js**         |
+| Database     | **MongoDB **                 |
 
 ---
 
@@ -43,18 +38,19 @@ HandyConnect is a modern freelancing platform tailored to connect everyday clien
 ## 📷 Screenshots
 
 ### Home Page
-![Homepage](src/assets/Screenshots/Home.png)
+![Homepage](public/Home.png)
 
 ### Category Listings
-![Popular Categories](src/assets/Screenshots/Categories.png)
+![Popular Categories](public/Categories.png)
 
-### How It Works Section
-![How It Works](src/assets/Screenshots/HowItWorks.png)
+### Dashboard
+![Dashboard](public/Dashboard.png)
 
-### Get Started Section
-![Get Started](src/assets/Screenshots/GetStarted.png)
+### Jobs
+![Jobs](src/assets/Screenshots/GetStarted.png)
 
 ### Authentication
-![Login/Register](src/assets/Screenshots/Auth.png)
+![Login/Register](public/SignupProvider.png)
+![Login/Register](public/SignupClient.png)
 
 ---
