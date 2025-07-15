@@ -1,8 +1,8 @@
+//page to choose signing in as provider or client
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { signUpUser } from "@/actions/AuthAction";
 import {
   Card,
   CardContent,
@@ -22,23 +22,22 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { User, Wrench, Loader2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+//schema for zod
 const formSchema = z.object({
-  role: z.enum(["user", "professional"], { message: "Please select a role." }),
+  role: z.enum(["client", "provider"], { message: "Please select a role." }),
 });
 
-export default function SignUpForm() {
-  const [selectedRole, setSelectedRole] = useState("professional");
+export default function SignUpAs() {
+  const [selectedRole, setSelectedRole] = useState("provider");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      role: "professional",
+      role: "provider",
     },
   });
 
@@ -73,14 +72,14 @@ export default function SignUpForm() {
                       <div className="grid grid-cols-2 gap-4">
                         {[
                           {
-                            value: "user",
-                            label: "User",
+                            value: "client",
+                            label: "Client",
                             icon: User,
                             description: "Looking for services",
                           },
                           {
-                            value: "professional",
-                            label: "Professional",
+                            value: "provider",
+                            label: "Provider",
                             icon: Wrench,
                             description: "Providing services",
                           },
@@ -138,6 +137,7 @@ export default function SignUpForm() {
                 </Button>
               </form>
             </Form>
+            {/* Link for Login if already have an account */}
             <div className="mt-4 text-center text-sm">
               <span className="text-muted-foreground">
                 Already have an account?{" "}

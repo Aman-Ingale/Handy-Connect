@@ -1,8 +1,6 @@
+//login form for client
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { signInHelper, signUpConsumer, signUpUser } from "@/actions/AuthAction";
-import { toast } from 'sonner';
 import {
   Card,
   CardContent,
@@ -22,23 +20,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useState } from "react";
+import { ThreeDot } from "react-loading-indicators";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().trim().min(6, { message: "Password must be at least 6 characters long" }),
 });
 
-export default function SignUpForm() {
+export default function LogInClient() {
   const router = useRouter();
-
+  const [isLoading,setIsLoading] = useState(false)
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,30 +40,50 @@ export default function SignUpForm() {
       password: "",
     },
   });
-
+//POST request for verifying client
   async function onSubmit(values) {
+    setIsLoading(true)
     console.log("Submitting:", values);
-    const r = await fetch("/api/login/provider",{
+        const r = await fetch("/api/login/client",{
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(values),
     });
     const result = await r.json();
     if (result.success) {
-      toast.success('Login Succesfull', {
-        description: result.message,
-      })
+        // toast.success('Login Succesfull', {
+        //   description: result.message,
+        // })
       localStorage.setItem("id",result.data.toString());
-      router.push("/dashboard");
-
+      router.push("/client/providers");
     } else {
-      toast.error('Invalid Credential', {
-        description: result.message,
-      })
-      console.log("Signup failed:", result.message);
+            toast.error('Invalid Credential', {
+              description: result.message,
+            })
+      console.log("Login failed:", result.message);
     }
   }
-
+  //     async function onSubmit(values) {
+  //       const r = await fetch("/api/login/client",{
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify(values),
+  //   });
+  //   const result = await r.json();
+  //   console.log(result)
+  //   if (result.success) {
+  //     router.push("/client/providers");
+  //   } else {
+  //     console.error("Login failed:", result.message);
+  //   }
+  // }
+  if(isLoading){
+    return (
+      <div className="flex items-center justify-center w-screen h-screen">
+        <ThreeDot variant="brick-stack" color="#000000" size="medium" text="" textColor="" />
+      </div>
+    )
+  }
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
       <Card className="w-full max-w-lg p-6 shadow-lg">

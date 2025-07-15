@@ -1,7 +1,7 @@
+//login form for provider
 "use client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { signInConsumer, signUpConsumer, signUpUser } from "@/actions/AuthAction";
+import { toast } from 'sonner';
 import {
   Card,
   CardContent,
@@ -21,15 +21,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Link from "next/link";
-import { toast } from "sonner";
+import { ThreeDot } from "react-loading-indicators";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -38,6 +32,7 @@ const formSchema = z.object({
 
 export default function SignUpForm() {
   const router = useRouter();
+  const [isLoading,setIsLoading] = useState(false)
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -46,29 +41,38 @@ export default function SignUpForm() {
       password: "",
     },
   });
-
+//POST request for verifying provider
   async function onSubmit(values) {
+    setIsLoading(true)
     console.log("Submitting:", values);
-        const r = await fetch("/api/login/client",{
+    const r = await fetch("/api/login/provider", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(values),
     });
     const result = await r.json();
-        if (result.success) {
-        toast.success('Login Succesfull', {
-          description: result.message,
-        })
-      localStorage.setItem("id",result.data.toString());
-      router.push("/jobs");
+    //after verification provider is redirected to it's dashboard
+    if (result.success) {
+      // toast.success('Login Succesfull', {
+      //   description: result.message,
+      // })
+      localStorage.setItem("id", result.data.toString());
+      router.push("/provider/dashboard");
+
     } else {
-            toast.error('Invalid Credential', {
-              description: result.message,
-            })
+      toast.error('Invalid Credential', {
+        description: result.message,
+      })
       console.log("Signup failed:", result.message);
     }
   }
-
+  if(isLoading){
+    return (
+      <div className="flex items-center justify-center w-screen h-screen">
+        <ThreeDot variant="brick-stack" color="#000000" size="medium" text="" textColor="" />
+      </div>
+    )
+  }
   return (
     <div className="flex justify-center items-center min-h-screen px-4">
       <Card className="w-full max-w-lg p-6 shadow-lg">
@@ -108,9 +112,6 @@ export default function SignUpForm() {
                   </FormItem>
                 )}
               />
-
-
-
 
               {/* Submit Button */}
               <Button type="submit" className="w-full">Login</Button>

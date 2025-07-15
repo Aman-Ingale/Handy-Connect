@@ -37,7 +37,6 @@ export default function Footer() {
     <footer className="bg-background border-t">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand Section */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center space-x-2">
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
@@ -45,7 +44,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Connecting local professionals with those who need their services.
+              Connecting local service providers with those who need their services.
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((social) => (
@@ -64,7 +63,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Company Links */}
           <div>
             <h3 className="text-sm font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
@@ -81,7 +79,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Resources Links */}
           <div>
             <h3 className="text-sm font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
@@ -98,7 +95,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Support Links */}
           <div>
             <h3 className="text-sm font-semibold mb-4">Support</h3>
             <ul className="space-y-2">

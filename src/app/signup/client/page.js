@@ -1,6 +1,6 @@
+//signup form for client 
 "use client";
 import { useRouter } from "next/navigation";
-import { signUpConsumer } from "@/actions/AuthAction";
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Link from "next/link";
-
+//schema for zod
 const formSchema = z.object({
   firstname: z.string().trim().min(2, { message: "First name must be at least 2 characters." }),
   lastname: z.string().trim().min(2, { message: "Last name must be at least 2 characters." }),
@@ -35,9 +35,8 @@ const formSchema = z.object({
   phone: z.string().regex(/^[0-9]{10}$/, { message: "Invalid phone number" }),
 });
 
-export default function SignUpForm() {
+export default function SignUpClient() {
   const router = useRouter();
-
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,7 +50,7 @@ export default function SignUpForm() {
       phone: "",
     },
   });
-
+  //POST called when clicked submit
   async function onSubmit(values) {
     console.log("Submitting:", values);
         const r = await fetch("/api/signup/client",{
@@ -61,7 +60,7 @@ export default function SignUpForm() {
     });
     const result = await r.json();
     if (result.success) {
-      router.push("/login/user");
+      router.push("/login/client");
     } else {
       console.error("Signup failed:", result.message);
     }
@@ -71,7 +70,7 @@ export default function SignUpForm() {
     <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
       <Card className="w-full max-w-2xl p-8 shadow-xl rounded-xl bg-white text-black">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center text-gray-900">Sign Up</CardTitle>
+          <CardTitle className="text-3xl font-bold text-center text-gray-900">Client SignUp</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>

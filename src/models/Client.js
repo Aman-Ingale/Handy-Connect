@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const ConsumerSchema = new mongoose.Schema({
+const ClientSchema = new mongoose.Schema({
   firstname: String,
   lastname: String,
   email: { type: String, unique: true },
@@ -17,6 +17,5 @@ const ConsumerSchema = new mongoose.Schema({
   address : String,
   location : String,
 });
-const ConsumerModel = mongoose.models?.Consumer || mongoose.model("Consumer", ConsumerSchema);
-// const ConsumerModel = mongoose.model("Consumer", ConsumerSchema);
-export default ConsumerModel
+const ClientModel = mongoose.models?.client || mongoose.model("client", ClientSchema);
+export default ClientModel

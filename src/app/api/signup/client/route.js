@@ -1,14 +1,14 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import HelperModel from "@/models/Helper";
-import ConsumerModel from "@/models/Consumer";
+import providermodel from "@/models/Provider";
+import ClientModel from "@/models/Client";
 export async function POST(req){
   await dbConnect();
   const data = await req.json();
   try {
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    const newUser = new ConsumerModel({ 
+    const newUser = new ClientModel({ 
       firstname: data.firstname,
       lastname: data.lastname,
       email: data.email,
@@ -22,6 +22,6 @@ export async function POST(req){
     return NextResponse.json({ success: true, message: "USER REGISTERED SUCCESSFULLY" });
   } catch (error) {
     console.log("Authorization Error:", error);
-    return null;
+    return NextResponse.json({ success: true, message: "Authorization Error" });;
   }
 }

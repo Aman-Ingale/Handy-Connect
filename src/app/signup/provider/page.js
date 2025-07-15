@@ -1,11 +1,9 @@
+//signup form for provider
 "use client";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
-
-import { signUpHelper } from "@/actions/AuthAction";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -14,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Link from "next/link";
-
+//schema for zod
 const formSchema = z.object({
   firstname: z.string().trim().min(2, { message: "First name must be at least 2 characters." }),
   lastname: z.string().trim().min(2, { message: "Last name must be at least 2 characters." }),
@@ -29,7 +27,7 @@ const formSchema = z.object({
   description: z.string().max(500).optional(),
 });
 
-export default function SignUpForm() {
+export default function SignUpProvider() {
   const router = useRouter();
 
   const form = useForm({
@@ -48,7 +46,7 @@ export default function SignUpForm() {
       description: "",
     },
   });
-
+  //POST called when clicked submit button
   async function onSubmit(values) {
     console.log("Submitting:", values);
        const r = await fetch("/api/signup/provider",{
@@ -57,8 +55,9 @@ export default function SignUpForm() {
       body: JSON.stringify(values),
     });
     const result = await r.json();
+    //if verified succesfully then redirecting to login page
     if (result.success) {
-      router.push("/login/professional");
+      router.push("/login/provider");
     } else {
       console.error("Signup failed:", result.message);
     }
@@ -68,7 +67,7 @@ export default function SignUpForm() {
     <div className="flex justify-center items-center min-h-screen px-4 bg-gray-50">
       <Card className="w-full max-w-4xl p-6 shadow-lg bg-white space-y-8">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center">Professional Sign Up</CardTitle>
+          <CardTitle className="text-3xl font-bold text-center">Provider SignUp</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>

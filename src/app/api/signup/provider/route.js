@@ -1,14 +1,14 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import HelperModel from "@/models/Helper";
-import ConsumerModel from "@/models/Consumer";
+import providermodel from "@/models/Provider";
+import ClientModel from "@/models/Client";
 export async function POST(req) {
   await dbConnect();
   const data = await req.json()
   try {
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    const newUser = new HelperModel({ 
+    const newUser = new providermodel({ 
       firstname: data.firstname,
       location: data.location,
       lastname: data.lastname,

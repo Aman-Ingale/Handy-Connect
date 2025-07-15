@@ -1,7 +1,6 @@
+//All providers shown on this page
 "use client"
-
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,31 +16,37 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getHelpers } from "@/actions/fetchActions";
 import Link from "next/link";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ThreeDot } from "react-loading-indicators";
+import { useRouter } from "next/navigation";
 
 
 const categories = ["carpenter", "electrician", "plumber","babysitter","watchman","housemaid"];
 const locations = ["Pune", "Mumbai", "Ahmedabad","Delhi","Hyderabad","Nagpur"];
 
-export default function JobsPage() {
-  function handleConnect(id){
-    router.push(`/professionalProfile?id=${id}`);
-  }
+export default function providers() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [minRating, setMinRating] = useState(0);
   const [minExperience, setMinExperience] = useState(0);
   const [professionals, setProfessionals] = useState([])
-
+    const [isLoading,setIsLoading] = useState(false)
+    const router = useRouter()
+  function handleProfile() {
+    router.push("/client/profile")
+  }
+  //GET request for getting all providers
   useEffect(()=>{
     async function getAllProfessinals() {
+      setIsLoading(true) 
     const x = await fetch("/api/providers",{
       method: 'GET',
     });      
     const result = await x.json();
       setProfessionals(result);
+      setIsLoading(false)
     }
     getAllProfessinals()
   },[])
@@ -63,16 +68,28 @@ export default function JobsPage() {
         pro.profession.toLowerCase().includes(searchTerm.toLowerCase()) ||
         pro.location.toLowerCase().includes(searchTerm.toLowerCase()))
   );
-
+  if(isLoading){
+    return (
+      <div className="flex items-center justify-center w-screen h-screen">
+        <ThreeDot variant="brick-stack" color="#000000" size="medium" text="" textColor="" />
+      </div>
+    )
+  }
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Link href="/userProfile" >
-      <span className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
-        <User className="w-5 h-5 text-gray-500" />
-      </span>
-      </Link>
-      <h1 className="text-4xl font-bold text-center mb-5">Jobs</h1>
-      <h2 className="text-3xl font-semibold text-center mb-10">Find Local Professionals</h2>
+    <div className="container mx-auto px-5 ">
+      <div className="flex flex-row justify-between items-center m-auto mx-5 pt-6 pb-12">
+        <div>
+                <h1 className="text-4xl font-bold text-center ">Providers</h1>
+
+        </div>
+        <div>
+          <button onClick={handleProfile}>
+                <Avatar>
+                  <AvatarFallback>{""}</AvatarFallback>
+                </Avatar>
+              </button>
+        </div>
+      </div>
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar */}
         <aside className="w-full lg:w-1/4 bg-muted/20 p-4 rounded-xl shadow-md">
@@ -171,7 +188,7 @@ export default function JobsPage() {
                     <DollarSign className="inline-block h-5 w-5 mr-1" />
                     {pro.pricing}/hr
                   </span> */}
-                  <Link key={pro._id} href={`/professionalProfile/${pro._id}`} >
+                  <Link key={pro._id} href={`/client/details/${pro._id}`} >
                   <Button  className="w-full mt-2">View Details</Button>
                   </Link>
 

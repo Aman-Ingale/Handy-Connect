@@ -1,6 +1,6 @@
+//Home page
 "use client";
 import { useRouter } from "next/navigation";
-
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/ui/footer";
@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-
+//static categories for ui
 const categories = [
   { name: "Plumbing", icon: Wrench, color: "bg-blue-500" },
   { name: "Electrical", icon: Sparkles, color: "bg-yellow-500" },
@@ -29,12 +29,12 @@ const steps = [
   },
   {
     title: "Search",
-    description: "Search your job related queries in the jobs section",
+    description: "Search your job related queries in the providers section",
     icon: Clock,
   },
   {
     title: "Connect",
-    description: "Choose a desired freelancer and connect with them and get the job done!",
+    description: "Choose a desired service provider and connect with them and get the job done!",
     icon: CheckCircle2,
   },
 ];
@@ -50,7 +50,6 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header refs={{ aboutRef, categoriesRef, howItWorksRef, getStartedRef }} />
-
       <main className="flex-1">
         {/* Hero Section */}
         <section ref={aboutRef} className="relative w-full py-20 md:py-32 lg:py-40 bg-gradient-to-b from-background to-muted">
@@ -63,26 +62,26 @@ export default function HomePage() {
             >
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                 Find Trusted Local Freelancers
-    
+
               </h1>
               <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
                 Connect with skilled local freelancers for your home, office, or personal jobs.
               </p>
               <form className="mt-8 flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     className="pl-9"
                     placeholder="What service do you need?"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value) }
-                    
+                    onChange={(e) => setSearchQuery(e.target.value)}
+
                   />
                 </div>
                 <Link href="/login">
-                <Button size="lg" className="w-full sm:w-auto">
-                  Search
-                </Button>
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Search
+                  </Button>
                 </Link>
               </form>
             </motion.div>
@@ -98,7 +97,7 @@ export default function HomePage() {
                 Popular Services
               </h2>
               <p className="mt-4 max-w-[700px] mx-auto text-muted-foreground">
-                Discover a wide range of services offered by local professionals.
+                Discover a wide range of services offered by service providers.
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -170,15 +169,15 @@ export default function HomePage() {
                 Join HandyConnect today and connect with skilled handyman in your area.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-               <Link href="/signup/user" >
-               <Button size="lg" className="w-full sm:w-auto">
-                  Find a Professional
-                </Button>
-               </Link>
-               <Link href="/signup/professional" >
-                <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                  Become a Pro
-                </Button>
+                <Link href="/signup/client" >
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Find a provider
+                  </Button>
+                </Link>
+                <Link href="/signup/provider" >
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                    Become a Provider
+                  </Button>
                 </Link>
               </div>
             </div>

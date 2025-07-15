@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Menu, X, Moon, Sun } from "lucide-react";
@@ -15,6 +15,7 @@ export default function Header({ refs }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
+  const router = useRouter()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,6 +38,12 @@ export default function Header({ refs }) {
       setIsMenuOpen(false);
     }
   };
+  const handleLogin = () =>{
+    router.push("/login")
+  }
+  const handleSignup = () =>{
+    router.push("/signup")
+  }
 
   return (
     <header
@@ -84,12 +91,12 @@ export default function Header({ refs }) {
             <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
               {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <Link href="/login">
-              <Button variant="ghost">Login</Button>
-            </Link>
-            <Link href="/signup">
-              <Button>Sign Up</Button>
-            </Link>
+            <div>
+              <Button variant="ghost" onClick={handleLogin}>Login</Button>
+            </div>
+            <div >
+              <Button onClick={handleSignup}>Sign Up</Button>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}

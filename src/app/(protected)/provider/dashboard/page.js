@@ -1,22 +1,17 @@
+//Detailed dashboard for provider 
 "use client"
-
 import { useEffect, useState } from "react"
-import { CalendarIcon, Home, LineChartIcon, Menu, Star, User, Wallet, LogOut, Settings, Bell, Search } from "lucide-react"
+import { Home, Star, Wallet, Search, Bell, Mail } from "lucide-react"
 import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { motion } from "framer-motion"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { getProfessionalData } from "@/actions/fetchActions"
-import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { format } from 'date-fns';
+import { ThreeDot } from "react-loading-indicators"
+import { useRouter } from "next/navigation"
 
 const earningsData = [
   { name: "Jan", earnings: 4000 },
@@ -27,20 +22,23 @@ const earningsData = [
 ]
 
 
-export default function HelperDashboard() {
+export default function ProviderDashboard() {
   const [professional, setProfessional] = useState({});
-  const [professionalRating, setProfessionalRating] = useState(professional.total_ratings)
   const [nameInitial, setNameInitial] = useState("")
-  const router = useRouter();
   const [date, setDate] = useState(new Date())
   const id = localStorage.getItem("id")
-  function handleLogOut() {
-    localStorage.removeItem("id")
-    router.push("/")
+    const [isLoading,setIsLoading] = useState(false)
+    const router = useRouter()
+  function handleProfile() {
+    router.push("/provider/profile")
   }
-
+  function handleNotification() {
+    router.push("/provider/requests")
+  }
+  //GET request for getting the data for charts from database
   useEffect(() => {
     async function getData() {
+      setIsLoading(true)
       try {
         const x = await fetch(`/api/details/${id}`, {
           method: 'GET',
@@ -54,11 +52,19 @@ export default function HelperDashboard() {
       } catch (error) {
         console.error(error)
       }
+      setIsLoading(false)
+
     }
     getData();
   }, [])
   const recentJobs = professional.jobs
-
+  if(isLoading){
+    return (
+      <div className="flex items-center justify-center w-screen h-screen">
+        <ThreeDot variant="brick-stack" color="#000000" size="medium" text="" textColor="" />
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen bg-background">
 
@@ -76,20 +82,21 @@ export default function HelperDashboard() {
                 placeholder="Search..."
               />
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
 
               {/* <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5" />
               </Button> */}
-              <Button variant="ghost" size="icon">
-                {/* <Settings className="h-5 w-5" /> */}
-              </Button>
-              <Link href="/editProfessional">
+              <button onClick={handleNotification}>
+                
+              <Mail className="h-8 w-8 text-muted-foreground" />
+              </button>
+
+              <button onClick={handleProfile}>
                 <Avatar>
-                  <AvatarImage src={professional.profile_picture} />
-                  <AvatarFallback>{nameInitial}</AvatarFallback>
+                  <AvatarFallback>{""}</AvatarFallback>
                 </Avatar>
-              </Link>
+              </button>
             </div>
           </div>
 

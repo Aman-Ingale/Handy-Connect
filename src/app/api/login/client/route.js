@@ -1,15 +1,15 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import HelperModel from "@/models/Helper";
-import ConsumerModel from "@/models/Consumer";
+import providermodel from "@/models/Provider";
+import ClientModel from "@/models/Client";
 export async function POST(req) {
     await dbConnect();
     const data = await req.json();
     console.log(data.email);
     console.log(data.password);
     try {
-        const user = await ConsumerModel.findOne({
+        const user = await ClientModel.findOne({
             email: data.email
         });
         if (!user) {

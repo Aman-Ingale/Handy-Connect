@@ -2,8 +2,8 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import HelperModel from "@/models/Helper";
-import ConsumerModel from "@/models/Consumer";
+import providermodel from "@/models/Provider";
+import ClientModel from "@/models/Client";
 import { Phone } from "lucide-react";
 // import { createSession } from "@/lib/session";
 
@@ -19,7 +19,7 @@ export async function signUpConsumer(formData) {
   }
   try {
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    const newUser = new ConsumerModel({ 
+    const newUser = new ClientModel({ 
       firstname: data.firstname,
       lastname: data.lastname,
       email: data.email,
@@ -49,7 +49,7 @@ export async function signUpHelper(formData) {
 
   try {
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    const newUser = new HelperModel({ 
+    const newUser = new providermodel({ 
       firstname: data.firstname,
       location: data.location,
       lastname: data.lastname,
@@ -85,7 +85,7 @@ export async function signInConsumer(formData) {
   }
 
   try {
-    const user = await ConsumerModel.findOne({
+    const user = await ClientModel.findOne({
       email: data.email
     });
 
@@ -123,7 +123,7 @@ export async function signInHelper(formData) {
     throw new Error("Invalid formData format");
   }
   try {
-    const user = await HelperModel.findOne({
+    const user = await providermodel.findOne({
       email: data.email
     });
 

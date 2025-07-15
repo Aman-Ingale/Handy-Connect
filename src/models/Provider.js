@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const HelperSchema = new mongoose.Schema({
+const ProviderSchema = new mongoose.Schema({
   firstname: String,
   lastname: String,
   location: String,
@@ -37,7 +37,7 @@ const HelperSchema = new mongoose.Schema({
 
   }]
 });
-const HelperModel = mongoose.models?.Helper || mongoose.model("Helper", HelperSchema);
-// const HelperModel = mongoose.model("Helper", HelperSchema);
-export default HelperModel
+const ProviderModel = mongoose.models?.provider || mongoose.model("provider", ProviderSchema);
+// const providermodel = mongoose.model("Helper", HelperSchema);
+export default ProviderModel
 
